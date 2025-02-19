@@ -1,19 +1,25 @@
-Kelompok **spontanuhuy**
+## Kelompok **spontanuhuy**
 
 **Ketua Kelompok**
+
 Muhammad Fachrizal Giffari -- 22/504570/TK/55192
 
 **Anggota**
+
 Nashatra Aqila Ramadhani - 22/504580/TK/55195
+
 Muhammad Rendy - 22/503275/TK/54980
 
 ## Project Senior Project TI
 
-## Instansi: Departemen Teknologi Elektro dan Teknologi Informasi, Fakultas Teknik, Universitas Gadjah Mada
+## Instansi:
+Departemen Teknologi Elektro dan Teknologi Informasi, Fakultas Teknik, Universitas Gadjah Mada
 
-## Nama Produk: LokerHub
+## Nama Produk:
+LokerHub
 
-## Jenis Produk: Portal Lowongan Kerja dan Magang
+## Jenis Produk:
+Portal Lowongan Kerja dan Magang
 
 ## Latar Belakang:
 Proses rekrutmen konvensional seringkali menghadapi berbagai tantangan, antara lain:
