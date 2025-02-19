@@ -8,4 +8,4 @@ Ketua Kelompok: Muhammad Fachrizal Giffari
 
 Anggota 1:
 
-Anggota 2:
+Anggota 2: Nashatra Aqila Ramadhani - 22/504580/TK/55195
