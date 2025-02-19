@@ -2,12 +2,11 @@
 
 Aplikasi web yang membantu perusahaan dalam proses rekrutmen dengan memanfaatkan kecerdasan buatan.
 
-## Kelompok **Spontanuhuy**
+## Kelompok **spontanuhuy**
 
 ### Ketua Kelompok:
 - **Muhammad Fachrizal Giffari**
   *22/504570/TK/55192*
-
 
 ### Anggota:
 - **Muhammad Rendy**  
