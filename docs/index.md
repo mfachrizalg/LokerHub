@@ -68,8 +68,22 @@ kandidat yang melamar pekerjaan.
 
 ## Use-Case
 
+![Screenshot From 2025-02-20 11-32-49](https://github.com/user-attachments/assets/e2e8ca69-aaa0-478b-afa5-2e4be14280f8)
+
 ## ERD
+
+![erd](https://github.com/user-attachments/assets/55c8edee-83ab-4fe9-b2bb-ca5f1ff1adc8)
 
 ## Low-Fidelity Wireframe
 
+Halaman Kandidat:
+
+![Screenshot From 2025-02-20 11-35-31](https://github.com/user-attachments/assets/541668ef-68a4-4a77-9bcd-236e0aef1bac)
+
+Halaman Perekrut:
+
+![Screenshot From 2025-02-20 11-36-02](https://github.com/user-attachments/assets/ef9d2e5d-9ca4-4962-83d5-1a1488844673)
+
 ## Gantt-Chart
+
+![Screenshot From 2025-02-20 11-25-05](https://github.com/user-attachments/assets/9acf88f5-f71e-4417-8af8-14d9585a9315)
