@@ -1,15 +1,13 @@
 ## Kelompok **spontanuhuy**
 
 ### Ketua Kelompok:
-- **Muhammad Fachrizal Giffari**
-  *22/504570/TK/55192*
+**Muhammad Fachrizal Giffari** - *22/504570/TK/55192*
 
 ### Anggota:
-- **Muhammad Rendy**  
-  *22/503275/TK/54980*
 
-- **Nashatra Aqila Ramadhani**  
-  *22/504580/TK/55195*
+**Muhammad Rendy** - *22/503275/TK/54980*
+
+**Nashatra Aqila Ramadhani** - *22/504580/TK/55195*
 
 ## Project Senior Project TI
 
@@ -67,3 +65,11 @@ kandidat yang melamar pekerjaan.
 | **Glints**    | Direct Competitor            | Portal lowongan kerja dan magang                   | Fresh graduate, mahasiswa, freelancer  | - Fokus pada fresh graduate dan magang<br>- Banyak lowongan internasional di Asia Tenggara   | - Peluang yang sudah ditetapkan masih terbatas<br>- Keamanan berbeda di perusahaan lain | Koneksi langsung ke perusahaan + komunikasi, banyak peluang internasional |
 | **Kalibrr**   | Direct Competitor            | Portal pencarian kerja dan assessment berbasis AI  | Fresh graduate dan perusahaan besar    | - Fokus pada pencocokan kerja berbasis AI<br>- Memberikan tes keterampilan dan psikometri    | - Kurang transparan tentang peluang yang tersedia<br>- Beberapa fitur memerlukan biaya  | AI-led job seeker matching, AI, simple & robust                           |
 | **Jobstreet** | Direct Competitor            | Portal lowongan kerja internasional dan lokal      | Fresh graduate dan profesional         | - Salah satu platform pencarian kerja terbesar di Asia Tenggara<br>- Banyak peluang kerja    | - Kompetisi ketat di platform<br>- Tidak terlalu fokus pada fresh graduate              | Competitive long-term AI and filter job matching menggunakan AI           |
+
+## Use-Case
+
+## ERD
+
+## Low-Fidelity Wireframe
+
+## Gantt-Chart
