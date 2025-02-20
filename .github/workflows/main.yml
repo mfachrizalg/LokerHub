@@ -1,0 +1,14 @@
+name: LokerHub Example Workflow
+
+on:
+  push:
+    branches: [main] # Trigger on pushes to the 'main' branch
+
+jobs:
+  build: # This is a job named 'build'
+    runs-on: ubuntu-latest # Specify the runner (virtual machine) to use
+
+    steps:
+      - uses: actions/checkout@v3 # Checkout your code
+      - name: Run a script
+        run: echo "Hello, world!" # Example script step
