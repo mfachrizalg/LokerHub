@@ -3,7 +3,9 @@ package services
 import (
 	"backend/dtos"
 	"backend/models"
+	"backend/repositories"
 	"errors"
+	"github.com/gofiber/fiber/v2/log"
 	"github.com/golang-jwt/jwt/v5"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
@@ -12,19 +14,27 @@ import (
 )
 
 type AuthService struct {
-	DB *gorm.DB
+	repo *repositories.UserRepository
+}
+
+func NewAuthService(repo *repositories.UserRepository) *AuthService {
+	return &AuthService{
+		repo: repo,
+	}
 }
 
 func (s *AuthService) Login(req *dtos.LoginRequest) (*dtos.LoginResponse, error) {
 	var user models.User
 
 	// Find user by email
-	result := s.DB.Where("email = ?", req.Email).First(&user)
-	if result.Error != nil {
-		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
-			return nil, errors.New("invalid email or password")
-		}
-		return nil, errors.New("login failed")
+	existingUser, err := s.repo.FindByEmail(req.Email)
+	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
+		log.Error("Database error: ", err)
+		return nil, errors.New("failed to process registration")
+	}
+
+	if existingUser == nil {
+		return nil, errors.New("email not found")
 	}
 
 	// Verify password
