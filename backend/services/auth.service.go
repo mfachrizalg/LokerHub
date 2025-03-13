@@ -38,7 +38,7 @@ func (s *AuthService) Login(req *dtos.LoginRequest) (*dtos.LoginResponse, error)
 	}
 
 	// Verify password
-	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(req.Password)); err != nil {
+	if err := bcrypt.CompareHashAndPassword([]byte(existingUser.Password), []byte(req.Password)); err != nil {
 		return nil, errors.New("invalid email or password")
 	}
 
