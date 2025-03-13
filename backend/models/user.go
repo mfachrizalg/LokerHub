@@ -4,8 +4,12 @@ import (
 	"github.com/google/uuid"
 )
 
-// Role type (replace with actual roles if needed)
 type Role string
+
+const (
+	CandidateRole Role = "Candidate"
+	RecruiterRole Role = "Recruiter"
+)
 
 type User struct {
 	ID       uuid.UUID `gorm:"type:uuid;default:gen_random_uuid();primaryKey"`
