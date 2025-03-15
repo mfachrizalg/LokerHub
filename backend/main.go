@@ -14,11 +14,15 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/recover"
 )
 
+func setupRoutes(app *fiber.App) {
+	routes.SetupUserRoutes(app)
+	routes.SetupAuthRoutes(app)
+}
+
 func main() {
 	config.ConnectDB()
 	defer config.CloseDB()
 
-	// Create Fiber app with custom config
 	app := fiber.New(fiber.Config{
 		ErrorHandler: func(c *fiber.Ctx, err error) error {
 			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
@@ -27,15 +31,12 @@ func main() {
 		},
 	})
 
-	// Register middlewares
 	app.Use(logger.New())
 	app.Use(recover.New())
 	app.Use(cors.New())
 
-	// Setup routes
 	setupRoutes(app)
 
-	// Default port or from environment
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "3000"
@@ -59,13 +60,4 @@ func main() {
 	if err := app.Shutdown(); err != nil {
 		log.Fatal("Server shutdown failed: ", err)
 	}
-}
-
-// setupRoutes configures all API routes
-func setupRoutes(app *fiber.App) {
-	// Set up user routes for registration
-	routes.SetupUserRoutes(app)
-
-	// Set up auth routes for login
-	routes.SetupAuthRoutes(app)
 }

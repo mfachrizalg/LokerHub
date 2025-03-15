@@ -52,7 +52,7 @@ func (s *UserService) Register(req *dtos.RegisterRequest) (*dtos.RegisterRespons
 	user := models.User{
 		Email:    req.Email,
 		Password: string(hashedPassword),
-		Role:     models.Role(req.Role),
+		Role:     string(req.Role),
 	}
 
 	if err := tx.Create(&user).Error; err != nil {

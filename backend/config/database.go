@@ -85,7 +85,6 @@ func ConnectDB() *gorm.DB {
 	return DB
 }
 
-// migrateDB runs the database migrations
 func migrateDB(db *gorm.DB) error {
 	m := []interface{}{
 		&models.Candidate{},
@@ -99,7 +98,6 @@ func migrateDB(db *gorm.DB) error {
 	return db.AutoMigrate(m...)
 }
 
-// CloseDB closes the database connection
 func CloseDB() {
 	if DB != nil {
 		sqlDB, err := DB.DB()
