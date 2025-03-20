@@ -48,6 +48,24 @@ func (c *AuthController) Login(ctx *fiber.Ctx) error {
 		})
 	}
 
+	cookie := fiber.Cookie{
+		Name:     "LokerHubCookie",
+		Value:    response.Token,
+		MaxAge:   3600,
+		Secure:   false,
+		HTTPOnly: true,
+		SameSite: "Lax",
+	}
+
+	ctx.Cookie(&cookie)
+
 	// Return successful response
+	return ctx.Status(fiber.StatusOK).JSON(response)
+}
+
+func (c *AuthController) Logout(ctx *fiber.Ctx) error {
+	response := c.authService.Logout()
+	ctx.ClearCookie()
+
 	return ctx.Status(fiber.StatusOK).JSON(response)
 }

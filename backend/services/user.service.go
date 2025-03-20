@@ -12,18 +12,26 @@ import (
 )
 
 type UserService struct {
-	repo *repositories.UserRepository
+	userRepo      *repositories.UserRepository
+	candidateRepo *repositories.CandidateRepository
+	recruiterRepo *repositories.RecruiterRepository
 }
 
-func NewUserService(repo *repositories.UserRepository) *UserService {
+func NewUserService(
+	userRepo *repositories.UserRepository,
+	candidateRepo *repositories.CandidateRepository,
+	recruiterRepo *repositories.RecruiterRepository,
+) *UserService {
 	return &UserService{
-		repo: repo,
+		userRepo:      userRepo,
+		candidateRepo: candidateRepo,
+		recruiterRepo: recruiterRepo,
 	}
 }
 
-func (s *UserService) Register(req *dtos.RegisterRequest) (*dtos.RegisterResponse, error) {
+func (s *UserService) Register(req *dtos.RegisterRequest) (*dtos.MessageResponse, error) {
 	// Check if email already exists
-	existingUser, err := s.repo.FindByEmail(req.Email)
+	existingUser, err := s.userRepo.FindByEmail(req.Email)
 	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 		log.Error("Database error: ", err)
 		return nil, errors.New("failed to process registration")
@@ -41,7 +49,7 @@ func (s *UserService) Register(req *dtos.RegisterRequest) (*dtos.RegisterRespons
 	}
 
 	// Create user transaction
-	tx := s.repo.BeginTransaction()
+	tx := s.userRepo.BeginTransaction()
 	defer func() {
 		if r := recover(); r != nil {
 			tx.Rollback()
@@ -52,10 +60,10 @@ func (s *UserService) Register(req *dtos.RegisterRequest) (*dtos.RegisterRespons
 	user := models.User{
 		Email:    req.Email,
 		Password: string(hashedPassword),
-		Role:     models.Role(req.Role),
+		Role:     req.Role,
 	}
 
-	if err := tx.Create(&user).Error; err != nil {
+	if err := s.userRepo.Create(&user); err != nil {
 		tx.Rollback()
 		log.Error("Error creating user: ", err)
 		return nil, errors.New("failed to create user")
@@ -66,7 +74,7 @@ func (s *UserService) Register(req *dtos.RegisterRequest) (*dtos.RegisterRespons
 		candidate := models.Candidate{
 			UserID: user.ID,
 		}
-		if err := tx.Create(&candidate).Error; err != nil {
+		if err := s.candidateRepo.Create(&candidate).Error; err != nil {
 			tx.Rollback()
 			log.Error("Error creating candidate: ", err)
 			return nil, errors.New("failed to create candidate profile")
@@ -75,20 +83,19 @@ func (s *UserService) Register(req *dtos.RegisterRequest) (*dtos.RegisterRespons
 		recruiter := models.Recruiter{
 			UserID: user.ID,
 		}
-		if err := tx.Create(&recruiter).Error; err != nil {
+		if err := s.recruiterRepo.Create(&recruiter).Error; err != nil {
 			tx.Rollback()
 			log.Error("Error creating recruiter: ", err)
 			return nil, errors.New("failed to create recruiter profile")
 		}
 	}
 
-	// Commit transaction
 	if err := tx.Commit().Error; err != nil {
 		log.Error("Error committing transaction: ", err)
 		return nil, errors.New("registration failed")
 	}
 
-	return &dtos.RegisterResponse{
+	return &dtos.MessageResponse{
 		Message: "User registered successfully!",
 	}, nil
 }
