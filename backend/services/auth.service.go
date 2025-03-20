@@ -24,21 +24,17 @@ func NewAuthService(repo *repositories.UserRepository) *AuthService {
 }
 
 func (s *AuthService) Login(req *dtos.LoginRequest) (*dtos.LoginResponse, error) {
-	var user models.User
-
 	// Find user by email
-	existingUser, err := s.repo.FindByEmail(req.Email)
-	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
-		log.Error("Database error: ", err)
-		return nil, errors.New("failed to process registration")
-	}
-
-	if existingUser == nil {
+	user, err := s.repo.FindByEmail(req.Email)
+	if errors.Is(err, gorm.ErrRecordNotFound) {
 		return nil, errors.New("email not found")
+	} else if err != nil {
+		log.Error("Database error: ", err)
+		return nil, errors.New("failed to process login")
 	}
 
 	// Verify password
-	if err := bcrypt.CompareHashAndPassword([]byte(existingUser.Password), []byte(req.Password)); err != nil {
+	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(req.Password)); err != nil {
 		return nil, errors.New("invalid email or password")
 	}
 
@@ -54,12 +50,14 @@ func (s *AuthService) Login(req *dtos.LoginRequest) (*dtos.LoginResponse, error)
 	}, nil
 }
 
-func (s *AuthService) Logout() {
-
+func (s *AuthService) Logout() *dtos.MessageResponse {
+	return &dtos.MessageResponse{
+		Message: "Logout successful!",
+	}
 }
 
 // generateJWTToken creates a new JWT token for the authenticated user
-func generateJWTToken(user models.User) (string, error) {
+func generateJWTToken(user *models.User) (string, error) {
 	// Set expiration time
 	expTime := time.Now().Add(1 * time.Hour)
 
@@ -76,6 +74,9 @@ func generateJWTToken(user models.User) (string, error) {
 
 	// Generate signed token
 	secret := os.Getenv("JWT_SECRET")
+	if secret == "" {
+		return "", errors.New("JWT secret not configured")
+	}
 	tokenString, err := token.SignedString([]byte(secret))
 	if err != nil {
 		return "", err

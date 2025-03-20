@@ -9,9 +9,10 @@ import (
 )
 
 func SetupUserRoutes(app *fiber.App) {
-	// Initialize dependencies
 	userRepo := repositories.NewUserRepository()
-	userService := services.NewUserService(userRepo)
+	candidateRepo := repositories.NewCandidateRepository()
+	recruiterRepo := repositories.NewRecruiterRepository()
+	userService := services.NewUserService(userRepo, candidateRepo, recruiterRepo)
 	userController := controllers.NewUserController(userService)
 
 	// User routes

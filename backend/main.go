@@ -17,6 +17,9 @@ import (
 func setupRoutes(app *fiber.App) {
 	routes.SetupUserRoutes(app)
 	routes.SetupAuthRoutes(app)
+	routes.SetupRecruiterRoutes(app)
+	routes.SetupCandidateRoutes(app)
+	routes.SetupCompanyRoutes(app)
 }
 
 func main() {
@@ -42,7 +45,6 @@ func main() {
 		port = "3000"
 	}
 
-	// Start server with graceful shutdown
 	go func() {
 		if err := app.Listen(":" + port); err != nil {
 			log.Fatal("Error starting server: ", err)
@@ -51,7 +53,6 @@ func main() {
 
 	log.Printf("Server started on port %s", port)
 
-	// Graceful shutdown
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, os.Interrupt, syscall.SIGTERM)
 	<-quit
