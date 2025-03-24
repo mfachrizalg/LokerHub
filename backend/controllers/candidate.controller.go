@@ -36,7 +36,7 @@ func (c *CandidateController) RegisterCandidate(ctx *fiber.Ctx) error {
 		})
 	}
 
-	response, err := c.candidateService.RegisterCandidate(&request)
+	response, err := c.candidateService.RegisterCandidate(&request, ctx)
 	if err != nil {
 		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"message": "Register failed",

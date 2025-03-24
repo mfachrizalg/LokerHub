@@ -5,7 +5,9 @@ import (
 	"backend/models"
 	"backend/repositories"
 	"errors"
+	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/log"
+	"github.com/google/uuid"
 )
 
 type CandidateService struct {
@@ -18,18 +20,25 @@ func NewCandidateService(repo *repositories.CandidateRepository) *CandidateServi
 	}
 }
 
-func (s *CandidateService) RegisterCandidate(req *dtos.RegisterCandidateRequest) (*dtos.MessageResponse, error) {
+func (s *CandidateService) RegisterCandidate(req *dtos.RegisterCandidateRequest, ctx *fiber.Ctx) (*dtos.MessageResponse, error) {
 	tx := s.repo.BeginTransaction()
-	defer func() {
-		if r := recover(); r != nil {
-			tx.Rollback()
-		}
-	}()
+	defer tx.Rollback()
 
+	userId, ok := ctx.Locals("userID").(uuid.UUID)
+	if !ok {
+		log.Error("Error validating user id")
+		return nil, errors.New("invalid user id format")
+	}
 	candidate := models.Candidate{
-		Name:      req.Name,
-		Education: req.Education,
-		Handphone: req.Handphone,
+		UserID:      userId,
+		Name:        req.Name,
+		Description: req.Description,
+		Handphone:   req.Handphone,
+		Photo:       req.Photo,
+		Education:   req.Education,
+		Field:       req.Field,
+		Location:    req.Location,
+		CV:          req.CV,
 	}
 
 	if err := s.repo.Update(&candidate); err != nil {

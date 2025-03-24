@@ -13,7 +13,7 @@ func SetupCandidateRoutes(app *fiber.App) {
 	candidateService := services.NewCandidateService(candidateRepo)
 	candidateController := controllers.NewCandidateController(candidateService)
 
-	candidateRoutes := app.Group("/api/candidate")
+	candidateRoutes := app.Group("/api/candidates")
 	candidateRoutes.Use(middleware.JWTAuth())
 	candidateRoutes.Post("/register", middleware.RoleAuth("Candidate"), candidateController.RegisterCandidate)
 }
