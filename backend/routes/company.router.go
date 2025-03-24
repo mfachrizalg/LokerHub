@@ -13,7 +13,7 @@ func SetupCompanyRoutes(app *fiber.App) {
 	companyService := services.NewCompanyService(companyRepo)
 	companyController := controllers.NewCompanyController(companyService)
 
-	companyRoute := app.Group("/api/company")
+	companyRoute := app.Group("/api/companies")
 	companyRoute.Use(middleware.JWTAuth())
 	companyRoute.Post("/register", middleware.RoleAuth("Recruiter"), companyController.RegisterCompany)
 	companyRoute.Get("/", companyController.GetAllCompany)
