@@ -21,11 +21,7 @@ func NewCompanyService(companyRepo *repositories.CompanyRepository) *CompanyServ
 
 func (s *CompanyService) RegisterCompany(req *dtos.RegisterCompanyRequest) (*dtos.MessageResponse, error) {
 	tx := s.companyRepo.BeginTransaction()
-	defer func() {
-		if r := recover(); r != nil {
-			tx.Rollback()
-		}
-	}()
+	defer tx.Rollback()
 
 	company := models.Company{
 		Name:     req.Name,
