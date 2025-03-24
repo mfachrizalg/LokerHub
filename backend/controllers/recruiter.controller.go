@@ -38,7 +38,7 @@ func (c *RecruitController) RegisterRecruit(ctx *fiber.Ctx) error {
 		})
 	}
 
-	response, err := c.recruitService.RegisterRecruiter(&request)
+	response, err := c.recruitService.RegisterRecruiter(&request, ctx)
 	if err != nil {
 		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"message": "Register failed",

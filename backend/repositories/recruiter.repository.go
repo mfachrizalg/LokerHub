@@ -21,7 +21,7 @@ func (r *RecruiterRepository) Create(recruiter *models.Recruiter) error {
 }
 
 func (r *RecruiterRepository) Update(recruiter *models.Recruiter) error {
-	return r.DB.Save(&recruiter).Error
+	return r.DB.Updates(&recruiter).Error
 }
 
 func (r *RecruiterRepository) BeginTransaction() *gorm.DB {
