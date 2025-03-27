@@ -50,11 +50,7 @@ func (s *UserService) Register(req *dtos.RegisterRequest) (*dtos.MessageResponse
 
 	// Create user transaction
 	tx := s.userRepo.BeginTransaction()
-	defer func() {
-		if r := recover(); r != nil {
-			tx.Rollback()
-		}
-	}()
+	defer tx.Rollback()
 
 	// Create new user
 	user := models.User{

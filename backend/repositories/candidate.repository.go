@@ -21,7 +21,7 @@ func (r *CandidateRepository) Create(candidate *models.Candidate) error {
 }
 
 func (r *CandidateRepository) Update(candidate *models.Candidate) error {
-	return r.DB.Save(&candidate).Error
+	return r.DB.Updates(&candidate).Error
 }
 
 func (r *CandidateRepository) BeginTransaction() *gorm.DB {
