@@ -8,7 +8,7 @@ import { GoX } from "react-icons/go";
 import { useRouter } from "next/navigation"
 
 
-export default function CompleteProfileKandidat() {
+export default function CompleteProfileRekruter() {
     const router = useRouter()
     const [showForm, setShowForm] = useState(false);
     const [selectedProfilePic, setSelectedProfilePic] = useState<File | null>(null);
