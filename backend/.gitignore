@@ -135,4 +135,4 @@ go.work.sum
 # env file
 .env
 /backend
-/credentials.json
+/config/client_secret.json
