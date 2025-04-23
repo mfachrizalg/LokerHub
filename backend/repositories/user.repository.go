@@ -26,15 +26,7 @@ func (r *UserRepository) FindByEmail(email string) (*models.User, error) {
 }
 
 func (r *UserRepository) Create(user *models.User) error {
-	return r.DB.Create(user).Error
-}
-
-func (r *UserRepository) CreateCandidate(candidate *models.Candidate) error {
-	return r.DB.Create(candidate).Error
-}
-
-func (r *UserRepository) CreateRecruiter(recruiter *models.Recruiter) error {
-	return r.DB.Create(recruiter).Error
+	return r.DB.Create(&user).Error
 }
 
 func (r *UserRepository) BeginTransaction() *gorm.DB {

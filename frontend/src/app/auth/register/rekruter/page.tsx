@@ -75,16 +75,6 @@ export default function RegisterRekruter() {
                             />
                         </div>
 
-                        <div>
-                            <input
-                            type="text"
-                            name="fullName"
-                            placeholder="Nama Lengkap"
-                            required
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#1e3a5f]"
-                            />
-                        </div>
-
                         <button
                             type="submit"
                             className="w-full py-2 bg-[#a8c5e2] hover:bg-[#97b8d9] text-[#1e3a5f] font-medium rounded-md transition-colors"

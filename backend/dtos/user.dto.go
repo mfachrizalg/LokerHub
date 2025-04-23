@@ -5,7 +5,3 @@ type RegisterRequest struct {
 	Password string `json:"password" validate:"required"`
 	Role     string `json:"role" validate:"required,oneof=Candidate Recruiter"`
 }
-
-type RegisterResponse struct {
-	Message string `json:"message"`
-}
