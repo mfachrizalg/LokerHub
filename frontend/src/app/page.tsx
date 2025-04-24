@@ -36,7 +36,7 @@ export default function Home() {
                     className="w-50 h-10 bg-[#1e3a5f] hover:bg-[#1e3a5f]/90 text-white text-xl"
                     onClick={() => router.push("/auth/register")}> Registrasi </Button>
                   <Button 
-                    className="w-50 h-10 bg-white border-[#1e3a5f] text-[#1e3a5f] hover:bg-[#1e3a5f]/90 text-xl"
+                    className="w-50 h-10 bg-white border-[#1e3a5f] text-[#1e3a5f] hover:bg-gray-100 text-xl"
                     onClick={() => router.push("/auth/login")}>Masuk</Button>
                 </div>
               </div>
