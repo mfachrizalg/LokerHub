@@ -4,6 +4,7 @@ import type React from "react"
 import { useState, useRef } from "react"
 import Image from "next/image"
 import Link from "next/link"
+import { Button } from "@/components/ui/button"
 import { useRouter } from "next/navigation"
 import { ArrowLeft } from "lucide-react"
 import Navbar from "@/components/global/navbar"
@@ -23,7 +24,7 @@ interface ProfileData {
   }
 }
 
-export default function EditProfilePage() {
+export default function EditProfilePerekrut() {
   const router = useRouter()
   const fileInputRef = useRef<HTMLInputElement>(null)
   const logoInputRef = useRef<HTMLInputElement>(null)
@@ -118,7 +119,7 @@ export default function EditProfilePage() {
 
         <h1 className="text-2xl font-bold text-center text-[#1e3a5f] mb-6">Ubah Profil</h1>
 
-        <form className="max-w-2xl mx-auto">
+        <form className="max-w-2xl mx-auto mb-10">
           {/* Recruiter Information */}
           <div className="bg-[#f8f0e5] rounded-lg border border-[#e8d5c4] p-6 mb-6">
             <h2 className="text-lg font-bold text-center text-[#1e3a5f] mb-4">Informasi Rekruter</h2>
@@ -246,13 +247,13 @@ export default function EditProfilePage() {
           </div>
 
           <div className="flex justify-center">
-            <button
+            <Button
               type="submit"
               disabled={isSaving}
-              className="bg-[#1e3a5f] text-white px-6 py-2 rounded-md hover:bg-[#1e3a5f]/90 transition-colors disabled:opacity-50"
+              className="bg-[#1e3a5f] text-white px-6 py-2 rounded-md hover:bg-[#1e3a5f]/90 transition-colors disabled:opacity-50 cursor-pointer"
             >
               {isSaving ? "Menyimpan..." : "Simpan Profil"}
-            </button>
+            </Button>
           </div>
         </form>
       </div>

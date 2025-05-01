@@ -29,7 +29,7 @@ export default function ProfileRekruter() {
       <Navbar role="perekrut"/>
 
       {/* Profile section */}
-      <div className="container mx-auto px-4 py-4">
+      <div className="container mx-auto px-4 py-4 mb-10">
         <h1 className="text-2xl font-bold text-center text-[#1e3a5f] mb-4">Profil</h1>
 
         <div className="max-w-2xl mx-auto space-y-2">
@@ -95,7 +95,7 @@ export default function ProfileRekruter() {
           <div className="flex justify-center mt-6">
             <Link
               href="/perekrut/profile/edit"
-              className="bg-white border border-[#1e3a5f] text-[#1e3a5f] px-6 py-2 rounded-md hover:bg-[#1e3a5f]/10 transition-colors"
+              className="bg-[#1e3a5f] text-white px-6 py-2 rounded-md hover:bg-[#1e3a5f]/90 transition-colors disabled:opacity-50 cursor-pointer"
             >
               ubah profil
             </Link>

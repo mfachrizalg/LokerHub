@@ -1,7 +1,8 @@
-"use client"
+'use client'
 
 import Image from "next/image"
 import { useRouter } from "next/navigation"
+import { Button } from "@/components/ui/button"
 import Navbar from "@/components/global/navbar"
 import Footer from "@/components/global/footer"
 
@@ -26,17 +27,17 @@ export default function ProfileKandidat() {
   return (
     <div className="min-h-screen flex flex-col bg-white">
       {/* Header */}
-      <Navbar role="kandidat"/>
+      <Navbar role="kandidat" />
 
-      {/* Profile section */}
-      <div className="container mx-auto px-4 py-8">
-        <h1 className="text-4xl font-bold text-center text-[#1e3a5f] mb-8">Profil</h1>
+      {/* Profile Section */}
+      <div className="container mx-auto px-4 py-8 mb-10">
+        <h1 className="text-2xl font-bold text-center text-[#1e3a5f] mb-8">Profil</h1>
         <div className="max-w-2xl mx-auto">
-          <div className="bg-[#f5efe7]/40 rounded-lg border border-blue-200 py-6">
+          <div className="bg-[#f8f0e5] rounded-lg border border-[#e8d5c4] py-6 px-4">
             <div className="flex flex-col items-center mb-6">
-              <div className="relative h-32 w-32 rounded-full border border-black overflow-hidden mb-4">
+              <div className="relative h-32 w-32 rounded-full border border-gray-200 overflow-hidden mb-4">
                 <Image 
-                  src="/ProfilePicture.svg" 
+                  src={profile.photoUrl} 
                   alt={profile.fullName}
                   fill
                   className="object-cover"
@@ -46,7 +47,7 @@ export default function ProfileKandidat() {
               <p className="text-lg text-center text-gray-600">{profile.title}</p>
             </div>
             
-            <div className="grid grid-cols-2 gap-4 mb-2 text-center">
+            <div className="grid grid-cols-2 gap-4 text-center text-sm">
               <div>
                 <p className="text-gray-500">Nomor Telepon</p>
                 <p className="font-medium">{profile.phoneNumber}</p>
@@ -65,21 +66,21 @@ export default function ProfileKandidat() {
                   href={profile.cvUrl} 
                   target="_blank" 
                   rel="noopener noreferrer"
-                  className="inline-block border border-black rounded-lg text-gray-700 px-3 py-1 hover:bg-blue-200"
+                  className="inline-block border border-[#1e3a5f] text-[#1e3a5f] px-3 py-1 rounded-md hover:bg-[#1e3a5f]/10"
                 >
-                  cv.pdf
+                  {profile.cvUrl}
                 </a>
               </div>
             </div>  
           </div>
 
-					<div className="flex justify-center pt-10">
-            <button
-                onClick={handleEditProfile}
-                className="border border-[#1e3a5f] bg-[#f5efe7]/40 text-[#1e3a5f] font-semibold px-4 py-1 rounded-md hover:bg-[#1e3a5f]/10 transition-colors cursor-pointer"
-              >
-                Ubah profil
-            </button>
+          <div className="flex justify-center pt-10">
+            <Button
+              onClick={handleEditProfile}
+              className="bg-[#1e3a5f] text-white px-6 py-2 rounded-md hover:bg-[#1e3a5f]/90 transition-colors disabled:opacity-50 cursor-pointer"
+            >
+              Ubah profil
+            </Button>
           </div>
         </div>
       </div>
