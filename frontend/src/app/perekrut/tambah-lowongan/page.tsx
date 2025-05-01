@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation"
 import { ArrowLeft, Plus, X } from "lucide-react"
 import Image from "next/image"
 import { addJobForm } from "@/hooks/tambahLowongan"
+import Navbar from "@/components/global/navbar"
+import Footer from "@/components/global/footer"
 
 export default function AddJobPage() {
   const router = useRouter()
@@ -38,19 +40,7 @@ export default function AddJobPage() {
   return (
     <div className="min-h-screen flex flex-col bg-white">
       {/* Header */}
-      <header className="border-b">
-        <div className="container mx-auto py-6 flex items-center justify-between">
-          <div className="flex items-center">
-            <Image
-              src="/LokerHub_Logo.svg"
-              alt="logo"
-              width={222}
-              height={42}
-              className="w-full "
-              />
-          </div>
-        </div>
-      </header>
+      <Navbar role="perekrut"/>
 
       <div className="container mx-auto px-4 py-6 flex-1">
         {/* Back button */}
@@ -256,6 +246,9 @@ export default function AddJobPage() {
           </div>
         </form>
       </div>
-      </div>
+
+      {/* Footer */}
+      <Footer />
+    </div>
   )
 }

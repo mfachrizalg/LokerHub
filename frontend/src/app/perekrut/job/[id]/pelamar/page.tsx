@@ -7,6 +7,8 @@ import Link from "next/link"
 import { FiArrowLeft } from "react-icons/fi";
 import { FaChevronDown, FaChevronCircleUp } from "react-icons/fa";
 import { FaChevronUp } from "react-icons/fa6"
+import Navbar from "@/components/global/navbar"
+import Footer from "@/components/global/footer"
 
 
 interface Job {
@@ -71,19 +73,7 @@ export default function ApplicantListPage() {
   return (
     <div className="min-h-screen flex flex-col bg-white">
       {/* Header */}
-      <header className="border-b">
-        <div className="container mx-auto py-6 flex items-center justify-between">
-          <div className="flex items-center">
-            <Image
-              src="/LokerHub_Logo.svg"
-              alt="logo"
-              width={222}
-              height={42}
-              className="w-full "
-              />
-          </div>
-        </div>
-      </header>
+      <Navbar role="perekrut"/>
 
       <div className="container mx-auto px-10 py-6 flex-1">
         {/* Back button */}
@@ -173,5 +163,8 @@ export default function ApplicantListPage() {
           )}
         </div>
       </div>
+
+      {/* Footer */}
+      <Footer />
     </div>
 )}

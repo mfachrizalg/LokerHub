@@ -5,6 +5,8 @@ import { useState, useEffect } from "react"
 import Link from "next/link"
 import { Search } from "lucide-react"
 import Image from "next/image"
+import Navbar from "@/components/global/navbar"
+import Footer from "@/components/global/footer"
 
 interface Job {
   id: string
@@ -70,19 +72,7 @@ export default function Kandidat() {
   return (
     <div className="min-h-screen flex flex-col bg-white">
       {/* Header */}
-      <header className="border-b">
-        <div className="container mx-auto py-6 flex items-center justify-between">
-          <div className="flex items-center">
-          <Image
-                src="/LokerHub_Logo.svg"
-                alt="logo"
-                width={222}
-                height={42}
-                className="w-full "
-              />
-          </div>
-        </div>
-      </header>
+      <Navbar role="kandidat"/>
 
       {/* Hero section with search */}
       <section className="bg-[#a8c5e2] py-25 md:py-18">
@@ -175,6 +165,9 @@ export default function Kandidat() {
           </div>
         </div>
       </section>
+
+      {/* Footer */}
+      <Footer />
     </div>
   )
 }

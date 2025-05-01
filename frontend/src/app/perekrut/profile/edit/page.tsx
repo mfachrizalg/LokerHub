@@ -6,6 +6,8 @@ import Image from "next/image"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { ArrowLeft } from "lucide-react"
+import Navbar from "@/components/global/navbar"
+import Footer from "@/components/global/footer"
 
 
 interface ProfileData {
@@ -100,40 +102,10 @@ export default function EditProfilePage() {
     }
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsSaving(true)
-
-    try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000))
-
-      alert("Profil berhasil diperbarui!")
-      router.push("/profil")
-    } catch (error) {
-      console.error("Error updating profile:", error)
-      alert("Gagal memperbarui profil. Silakan coba lagi.")
-    } finally {
-      setIsSaving(false)
-    }
-  }
-
   return (
     <div className="min-h-screen flex flex-col bg-white">
       {/* Header */}
-      <header className="border-b">
-        <div className="container mx-auto py-6 flex items-center justify-between">
-          <div className="flex items-center">
-            <Image
-              src="/LokerHub_Logo.svg"
-              alt="logo"
-              width={222}
-              height={42}
-              className="w-full "
-              />
-          </div>
-        </div>
-      </header>
+      <Navbar role="perekrut"/>
 
       <div className="container mx-auto px-4 py-6">
         {/* Back button */}
@@ -146,7 +118,7 @@ export default function EditProfilePage() {
 
         <h1 className="text-2xl font-bold text-center text-[#1e3a5f] mb-6">Ubah Profil</h1>
 
-        <form onSubmit={handleSubmit} className="max-w-2xl mx-auto">
+        <form className="max-w-2xl mx-auto">
           {/* Recruiter Information */}
           <div className="bg-[#f8f0e5] rounded-lg border border-[#e8d5c4] p-6 mb-6">
             <h2 className="text-lg font-bold text-center text-[#1e3a5f] mb-4">Informasi Rekruter</h2>
@@ -284,6 +256,9 @@ export default function EditProfilePage() {
           </div>
         </form>
       </div>
+
+      {/* Footer */}
+      <Footer />
     </div>
   )
 }

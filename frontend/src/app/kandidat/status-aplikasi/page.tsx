@@ -3,6 +3,8 @@
 import { useState, useEffect } from "react"
 import Image from "next/image"
 import Link from "next/link"
+import Navbar from "@/components/global/navbar"
+import Footer from "@/components/global/footer"
 
 // Mock data for application status
 const mockApplications = [
@@ -78,19 +80,7 @@ export default function ApplicationStatusPage() {
   return (
     <div className="min-h-screen flex flex-col bg-white">
 			{/* Header */}
-			<header className="border-b">
-        <div className="container mx-auto py-6 flex items-center justify-between">
-          <div className="flex items-center">
-            <Image
-              src="/LokerHub_Logo.svg"
-              alt="logo"
-              width={222}
-              height={42}
-              className="w-full "
-              />
-          </div>
-        </div>
-      </header>
+      <Navbar role="kandidat"/>
 
 			{/* Application status */}
       <div className="container mx-auto px-4 py-8">
@@ -140,6 +130,9 @@ export default function ApplicationStatusPage() {
             )}
         </div>
       </div>
+
+      {/* Footer */}
+      <Footer />
     </div>
   )
 }

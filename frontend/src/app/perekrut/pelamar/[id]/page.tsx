@@ -2,6 +2,8 @@
 
 import Image from "next/image"
 import { useRouter } from "next/navigation"
+import Navbar from "@/components/global/navbar"
+import Footer from "@/components/global/footer"
 
 const profile = {
   fullName: "Aditya Pratama",
@@ -20,19 +22,7 @@ export default function ProfilePelamar() {
   return (
     <div className="min-h-screen flex flex-col bg-white">
       {/* Header */}
-      <header className="border-b">
-        <div className="container mx-auto py-6 flex items-center justify-between">
-          <div className="flex items-center">
-            <Image
-              src="/LokerHub_Logo.svg"
-              alt="logo"
-              width={222}
-              height={42}
-              className="w-full "
-              />
-          </div>
-        </div>
-      </header>
+      <Navbar role="perekrut"/>
 
       {/* Profile section */}
       <div className="container mx-auto px-4 py-8">
@@ -80,6 +70,9 @@ export default function ProfilePelamar() {
           </div>
         </div>
       </div>
+
+      {/* Footer */}
+      <Footer />
     </div>
   )
 }

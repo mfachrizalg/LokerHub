@@ -1,10 +1,12 @@
 "use client"
 
 import type React from "react"
-
 import { useState, useRef } from "react"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
+import Navbar from "@/components/global/navbar"
+import Footer from "@/components/global/footer"
+import { Button } from "@/components/ui/button"
 
 interface ProfileData {
   fullName: string
@@ -75,19 +77,7 @@ export default function EditProfileKandidat() {
   return (
     <div className="min-h-screen flex flex-col bg-white">
       {/* Header */}
-      <header className="border-b">
-        <div className="container mx-auto py-6 flex items-center justify-between">
-          <div className="flex items-center">
-            <Image
-              src="/LokerHub_Logo.svg"
-              alt="logo"
-              width={222}
-              height={42}
-              className="w-full "
-              />
-          </div>
-        </div>
-      </header>
+      <Navbar role="kandidat"/>
 
 			{/* Section edit profile */}
       <div className="container mx-auto px-4 py-8">
@@ -204,17 +194,19 @@ export default function EditProfileKandidat() {
 
 					{/* Button to save the edited profile */}
 					<div className="flex justify-center mt-8">
-							<button
-								type="submit"
-								disabled={isSaving}
-								className="border border-[#1e3a5f] bg-[#f5efe7]/40 text-[#1e3a5f] font-semibold px-4 py-1 rounded-md hover:bg-[#1e3a5f]/10 transition-colors cursor-pointer"
+							<Button 
+							type="submit"
+							disabled={isSaving}
+							className="border border-[#1e3a5f] bg-[#f5efe7]/40 text-[#1e3a5f] font-semibold px-4 py-1 rounded-md hover:bg-[#1e3a5f]/10 transition-colors cursor-pointer"
 							>
 								{isSaving ? "Menyimpan..." : "Simpan profil"}
-							</button>
+							</Button>
 						</div>
 				</div>
 			</div>
 
+			{/* Footer */}
+			<Footer />
     </div>
     
   )

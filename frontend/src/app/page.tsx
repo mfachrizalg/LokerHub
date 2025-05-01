@@ -4,6 +4,7 @@ import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { PiCheckSquare } from "react-icons/pi";
 import { useRouter } from "next/navigation"
+import Footer from '@/components/global/footer';
 
 
 export default function Home() {
@@ -138,7 +139,7 @@ export default function Home() {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-8 my-8 px-20">
                 {/* Card 1 */}
                 <div className="bg-[#f9f5f0] px-6 py-8 rounded-lg shadow-md flex flex-col h-full">
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-start gap-3 mb-4">
                     <div className="bg-blue-900 text-white text-lg font-bold px-2 py-2 rounded-md inline-block">
                       01
                     </div>
@@ -146,14 +147,14 @@ export default function Home() {
                       Lamar Pekerjaan dengan Praktis
                     </h3>
                   </div>
-                  <p className="text-black text-lg mt-3 flex-grow">
+                  <p className="text-black text-lg">
                     Cukup unggah CV satu kali dan gunakan untuk melamar berbagai lowongan.
                   </p>
                 </div>
 
                 {/* Card 2 */}
                 <div className="bg-[#f9f5f0] px-6 py-8 rounded-lg shadow-md flex flex-col h-full">
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-start gap-3 mb-4">
                     <div className="bg-blue-900 text-white text-lg font-bold px-2 py-2 rounded-md inline-block">
                       02
                     </div>
@@ -161,14 +162,14 @@ export default function Home() {
                       Pantau Status Lamaran
                     </h3>
                   </div>
-                  <p className="text-black text-lg mt-3 flex-grow">
+                  <p className="text-black text-lg">
                     Tidak perlu menebak apakah lamaran Anda sudah diproses, cek statusnya langsung di LokerHub.
                   </p>
                 </div>
 
                 {/* Card 3 */}
                 <div className="bg-[#f9f5f0] px-6 py-8 rounded-lg shadow-md flex flex-col h-full">
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-start gap-3 mb-4">
                     <div className="bg-blue-900 text-white text-lg font-bold px-2 py-2 rounded-md inline-block">
                       03
                     </div>
@@ -176,7 +177,7 @@ export default function Home() {
                       Hemat Waktu & Lebih Efisien
                     </h3>
                   </div>
-                  <p className="text-black text-lg mt-3 flex-grow">
+                  <p className="text-black text-lg">
                     Fokus pada lowongan yang sesuai dengan keahlian dan pengalaman Anda.
                   </p>
                 </div>
@@ -195,55 +196,55 @@ export default function Home() {
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-8 my-8 px-20">
                 {/* Card 1 */}
-                <div className="bg-[#f9f5f0] px-6 py-8 rounded-lg shadow-md flex flex-col h-full">
-                  <div className="flex items-center gap-3">
+                <div className="bg-[#f9f5f0] px-6 py-8 rounded-lg shadow-md flex flex-col justify-between h-full">
+                  <div className="flex items-start gap-3 mb-4">
                     <div className="bg-blue-900 text-white text-lg font-bold px-2 py-2 rounded-md inline-block">
                       01
                     </div>
                     <h3 className="text-2xl font-semibold text-[#1e3a5f] mt-2">
-                      Lamar Pekerjaan dengan Praktis
+                      Seleksi Kandidat Lebih Efektif
                     </h3>
                   </div>
-                  <p className="text-black text-lg mt-3 flex-grow">
-                    Cukup unggah CV satu kali dan gunakan untuk melamar berbagai lowongan.
+                  <p className="text-black text-lg">
+                    Sistem akan membantu menyaring CV berdasarkan kriteria yang Anda tentukan.
                   </p>
                 </div>
 
                 {/* Card 2 */}
                 <div className="bg-[#f9f5f0] px-6 py-8 rounded-lg shadow-md flex flex-col h-full">
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-start gap-3">
                     <div className="bg-blue-900 text-white text-lg font-bold px-2 py-2 rounded-md inline-block">
                       02
                     </div>
-                    <h3 className="text-2xl font-semibold text-[#1e3a5f] mt-2">
-                      Pantau Status Lamaran
+                    <h3 className="text-2xl font-semibold text-[#1e3a5f]">
+                      Proses Rekrutmen lebih Terstruktur
                     </h3>
                   </div>
-                  <p className="text-black text-lg mt-3 flex-grow">
-                    Tidak perlu menebak apakah lamaran Anda sudah diproses, cek statusnya langsung di LokerHub.
+                  <p className="text-black text-lg">
+                    Pantau pelamar dan kelola tahapan seleksi dengan lebih praktis.
                   </p>
                 </div>
 
                 {/* Card 3 */}
-                <div className="bg-[#f9f5f0] px-6 py-8 rounded-lg shadow-md flex flex-col h-full">
-                  <div className="flex items-center gap-3">
-                    <div className="bg-blue-900 text-white text-lg font-bold px-2 py-2 rounded-md inline-block">
+                <div className="bg-[#f9f5f0] px-6 py-8 rounded-lg shadow-md flex-col h-full">
+                  <div className="flex items-start gap-3 mb-4">
+                    <div className="bg-blue-900 text-white text-lg font-bold px-2 py-2 rounded-md">
                       03
                     </div>
-                    <h3 className="text-2xl font-semibold text-[#1e3a5f] mt-2">
-                      Hemat Waktu & Lebih Efisien
+                    <h3 className="text-2xl font-semibold text-[#1e3a5f]">
+                      Akses Kandidat yang Relevan
                     </h3>
                   </div>
-                  <p className="text-black text-lg mt-3 flex-grow">
-                    Fokus pada lowongan yang sesuai dengan keahlian dan pengalaman Anda.
+                  <p className="text-black text-lg">
+                    Temukan pelamar yang paling sesuai tanpa harus memilah satu per satu.
                   </p>
                 </div>
               </div>
-            </div>
-
+          </div>
             </div>
         </section>
       </main>
+      <Footer />
     </div>
   )
 }

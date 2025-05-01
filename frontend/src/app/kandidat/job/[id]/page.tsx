@@ -3,6 +3,9 @@
 import { useParams, useRouter } from "next/navigation"
 import Image from "next/image"
 import { useEffect, useState } from "react"
+import Footer from "@/components/global/footer"
+import Navbar from "@/components/global/navbar"
+import { Button } from "@/components/ui/button"
 
 // Job Detail Data Structure
 interface JobDetail {
@@ -53,19 +56,7 @@ export default function JobDetailPage() {
   return (
     <div className="min-h-screen flex flex-col bg-white">
       {/* Header */}
-      <header className="border-b">
-        <div className="container mx-auto py-6 flex items-center justify-between">
-          <div className="flex items-center">
-            <Image
-              src="/LokerHub_Logo.svg"
-              alt="logo"
-              width={222}
-              height={42}
-              className="w-full "
-              />
-          </div>
-        </div>
-      </header>
+      <Navbar role="kandidat" />
 
       {/* Detail Job */}
       <div className="container mx-auto px-4 py-8">
@@ -128,13 +119,15 @@ export default function JobDetailPage() {
 
           {/* Button to apply job */}
           <div className="flex pt-10 justify-end">
-            <button
-              className="bg-[#f5efe7] border border-black text-xl text-black font-semibold py-2 px-16 rounded-md hover:bg-[#9db6ca] transition-colors cursor-pointer">
+            <Button className="bg-[#f5efe7] border border-black text-lg text-black font-semibold py-1 px-10 rounded-md hover:bg-[#9db6ca] transition-colors cursor-pointer">
               Lamar
-            </button>
+            </Button>
           </div>
         </div>
       </div>
+
+      {/* Footer */}
+      <Footer />
     </div>
     
   )
