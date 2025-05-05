@@ -1,1 +1,5 @@
-fastapi==0.115.11
+pandas
+scikit-learn
+nltk
+PyPDF2
+joblib
