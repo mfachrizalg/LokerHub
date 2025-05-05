@@ -1,6 +1,5 @@
-fastapi==0.115.11
-uvicorn
-aiofiles
-pdfplumber
-python-docx
-httpx
+pandas
+scikit-learn
+nltk
+PyPDF2
+joblib
