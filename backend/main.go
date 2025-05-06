@@ -20,6 +20,8 @@ func setupRoutes(app *fiber.App) {
 	routes.SetupRecruiterRoutes(app)
 	routes.SetupCandidateRoutes(app)
 	routes.SetupCompanyRoutes(app)
+	routes.SetupJobRoutes(app)
+	routes.SetupProcessRoutes(app)
 }
 
 func main() {
