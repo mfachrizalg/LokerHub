@@ -19,39 +19,22 @@ func NewJobController(service *services.JobService) *JobController {
 	}
 }
 
-// GetAllJobs retrieves all jobs (without pagination)
+// GetAllJobs retrieves all jobs
 func (c *JobController) GetAllJobs(ctx *fiber.Ctx) error {
-	// Get jobs from service (assuming service method is updated to not use pagination)
-	jobs, err := c.service.GetAllJobs() // Call service without page/limit
+	jobs, err := c.service.GetAllJobs()
 	if err != nil {
-		// Use a more generic error message for internal server errors
 		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"message": "Failed to retrieve jobs",
-			// "error": err.Error(), // Avoid exposing internal errors in production
+			"error":   err.Error(),
 		})
 	}
 
-	// Convert to response format
-	jobResponses := make([]dtos.JobResponse, len(jobs))
-	for i, job := range jobs {
-		jobResponses[i] = dtos.JobResponse{
-			ID:            job.ID,
-			CompanyID:     job.CompanyID,
-			RecruiterID:   job.RecruiterID,
-			Name:          job.Name,
-			Criteria:      job.Criteria,
-			Qualification: job.Qualification,
-			Status:        job.Status,
-		}
-	}
-
-	// Return the list of jobs directly as a JSON array
-	return ctx.Status(fiber.StatusOK).JSON(jobResponses)
+	return ctx.Status(fiber.StatusOK).JSON(jobs)
 }
 
 // UpdateJob updates an existing job
 func (c *JobController) UpdateJob(ctx *fiber.Ctx) error {
-	jobIDStr := ctx.Params("id") // Assuming the route parameter is named "id"
+	jobIDStr := ctx.Params("jobId")
 	jobID, err := uuid.Parse(jobIDStr)
 	if err != nil {
 		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
@@ -67,20 +50,14 @@ func (c *JobController) UpdateJob(ctx *fiber.Ctx) error {
 		})
 	}
 
-	// Call the service to update the job
 	response, err := c.service.UpdateJob(jobID, &req, ctx)
 	if err != nil {
-		// Handle specific errors from the service layer
-		if errors.Is(err, gorm.ErrRecordNotFound) || err.Error() == "job not found" {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return ctx.Status(fiber.StatusNotFound).JSON(fiber.Map{"message": "Job not found"})
 		}
-		if err.Error() == "unauthorized to update this job" {
-			return ctx.Status(fiber.StatusForbidden).JSON(fiber.Map{"message": err.Error()})
-		}
-		// Generic error for other issues
 		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"message": "Failed to update job",
-			"error":   err.Error(), // Avoid exposing too much detail in production
+			"error":   err.Error(),
 		})
 	}
 
@@ -89,27 +66,27 @@ func (c *JobController) UpdateJob(ctx *fiber.Ctx) error {
 
 // CreateJob creates a new job
 func (c *JobController) CreateJob(ctx *fiber.Ctx) error {
-	var req *dtos.CreateJobRequest
-
-	// Parse and validate request
-	if err := ctx.BodyParser(req); err != nil {
+	var req dtos.CreateJobRequest
+	if err := ctx.BodyParser(&req); err != nil {
 		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"message": "Invalid request body",
+			"error":   err.Error(),
 		})
 	}
 
-	// Validate required fields (could use validator package here)
-	if req.Name == "" || req.Criteria == "" || req.Qualification == "" {
-		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"message": "Missing required fields",
-		})
-	}
-
-	// Create job
-	response, err := c.service.CreateJob(req, ctx)
+	response, err := c.service.CreateJob(&req, ctx)
 	if err != nil {
-		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"message": err.Error(),
+		// Handle specific errors from the service layer
+		if err.Error() == "job already exists" {
+			return ctx.Status(fiber.StatusConflict).JSON(fiber.Map{"message": err.Error()})
+		}
+		if err.Error() == "invalid recruiter ID format" {
+			return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{"message": err.Error()})
+		}
+		// Generic error for other issues
+		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"message": "Failed to create job",
+			"error":   err.Error(), // Avoid exposing too much detail in production
 		})
 	}
 
@@ -128,16 +105,12 @@ func (c *JobController) ApplyJob(ctx *fiber.Ctx) error {
 
 	response, err := c.service.ApplyJob(jobID, ctx)
 	if err != nil {
-		// Check for specific user-facing errors
-		if err.Error() == "job not found" {
-			return ctx.Status(fiber.StatusNotFound).JSON(fiber.Map{"message": err.Error()})
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return ctx.Status(fiber.StatusNotFound).JSON(fiber.Map{"message": "Job not found"})
 		}
-		if err.Error() == "already applied for this job" {
-			return ctx.Status(fiber.StatusConflict).JSON(fiber.Map{"message": err.Error()})
-		}
-		// Generic internal error for others
 		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"message": "Failed to apply for job", // Avoid exposing internal details
+			"message": "Failed to apply for job",
+			"error":   err.Error(),
 		})
 	}
 

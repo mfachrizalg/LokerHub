@@ -25,8 +25,8 @@ func NewJobService(jobRepo *repositories.JobRepository, processRepo *repositorie
 	}
 }
 
-// GetAllJobs retrieves all jobs (without pagination)
-func (s *JobService) GetAllJobs() ([]models.Job, error) {
+// GetAllJobs retrieves all jobs
+func (s *JobService) GetAllJobs() (*[]dtos.JobResponse, error) {
 	// Call repository method without pagination parameters
 	jobs, err := s.jobRepo.FindAll()
 	if err != nil {
@@ -34,28 +34,63 @@ func (s *JobService) GetAllJobs() ([]models.Job, error) {
 		return nil, errors.New("failed to retrieve jobs")
 	}
 
-	// Return only the jobs slice and error
-	return jobs, nil
+	// Convert model to DTO
+	jobResponses := make([]dtos.JobResponse, len(jobs))
+	for i, job := range jobs {
+		companyName, location, err := s.jobRepo.GetCompanyNameAndLocationByID(job.CompanyID)
+		if err != nil {
+			log.Error("Error retrieving company name: ", err)
+			return nil, errors.New("failed to retrieve company name")
+		}
+		// Convert each job to its corresponding DTO
+		jobResponses[i] = dtos.JobResponse{
+			ID:          job.ID,
+			CompanyID:   job.CompanyID,
+			Name:        job.Name,
+			CompanyName: companyName,
+			Location:    location,
+			CreatedAt:   job.CreatedAt,
+		}
+	}
+
+	return &jobResponses, nil
 }
 
 // CreateJob creates a new job posting
-func (s *JobService) CreateJob(req *dtos.CreateJobRequest, ctx *fiber.Ctx) (*dtos.JobResponse, error) {
+func (s *JobService) CreateJob(req *dtos.CreateJobRequest, ctx *fiber.Ctx) (*dtos.MessageResponse, error) {
 	tx := s.jobRepo.BeginTransaction()
 	defer tx.Rollback()
 
-	recruiterID, ok := ctx.Locals("userID").(uuid.UUID)
+	userID, ok := ctx.Locals("userID").(uuid.UUID)
 	if !ok {
+		log.Error("Error validating user ID from context")
+		return nil, errors.New("invalid user ID format")
+	}
+
+	recruiterID, err := s.jobRepo.GetRecruiterIDByUserID(userID)
+	if err != nil {
 		log.Error("Error validating recruiter ID")
 		return nil, errors.New("invalid recruiter ID format")
 	}
 
+	companyID, err := s.jobRepo.GetCompanyIDByRecruiterID(recruiterID)
+	if err != nil {
+		log.Error("Error retrieving company ID: ", err)
+		return nil, errors.New("failed to retrieve company ID")
+	}
+
 	job := models.Job{
-		CompanyID:     req.CompanyID,
-		RecruiterID:   recruiterID,
-		Name:          req.Name,
-		Criteria:      req.Criteria,
-		Qualification: req.Qualification,
-		Status:        "Active", // Default status for new jobs
+		RecruiterID:    recruiterID,
+		CompanyID:      companyID,
+		Name:           req.Name,
+		Type:           req.Type,
+		Position:       req.Position,
+		Salary:         req.Salary,
+		Field:          req.Field,
+		Description:    req.Description,
+		Responsibility: req.Responsibility,
+		ClosedAt:       req.ClosedAt,
+		Qualification:  req.Qualification,
 	}
 
 	if err := s.jobRepo.Create(&job); err != nil {
@@ -68,27 +103,27 @@ func (s *JobService) CreateJob(req *dtos.CreateJobRequest, ctx *fiber.Ctx) (*dto
 		return nil, errors.New("failed to create job posting")
 	}
 
-	return &dtos.JobResponse{
-		ID:            job.ID,
-		CompanyID:     job.CompanyID,
-		RecruiterID:   job.RecruiterID,
-		Name:          job.Name,
-		Criteria:      job.Criteria,
-		Qualification: job.Qualification,
-		Status:        job.Status,
+	return &dtos.MessageResponse{
+		Message: "Successfully created job",
 	}, nil
 }
 
 // ApplyJob allows a candidate to apply for a job
 func (s *JobService) ApplyJob(jobID uuid.UUID, ctx *fiber.Ctx) (*dtos.MessageResponse, error) {
-	candidateID, ok := ctx.Locals("userID").(uuid.UUID)
+	userID, ok := ctx.Locals("userID").(uuid.UUID)
 	if !ok {
 		log.Error("Error validating candidate ID from context")
 		return nil, errors.New("invalid user ID format")
 	}
 
+	candidateID, err := s.jobRepo.GetCandidateIDByUserID(userID)
+	if err != nil {
+		log.Error("Error retrieving candidate ID: ", err)
+		return nil, errors.New("invalid candidate ID format")
+	}
+
 	// Check if job exists (optional but good practice)
-	_, err := s.jobRepo.FindById(jobID)
+	_, err = s.jobRepo.FindById(jobID)
 	if err != nil {
 		log.Error("Error finding job: ", err)
 		return nil, errors.New("job not found")
@@ -111,7 +146,6 @@ func (s *JobService) ApplyJob(jobID uuid.UUID, ctx *fiber.Ctx) (*dtos.MessageRes
 	process := models.Process{
 		JobID:       jobID,
 		CandidateID: candidateID,
-		Status:      models.Applied, // Default status
 	}
 
 	// Use the transaction for the Create operation
@@ -132,14 +166,20 @@ func (s *JobService) ApplyJob(jobID uuid.UUID, ctx *fiber.Ctx) (*dtos.MessageRes
 	}, nil
 }
 
-func (s *JobService) UpdateJob(jobID uuid.UUID, req *dtos.UpdateJobRequest, ctx *fiber.Ctx) (*dtos.JobResponse, error) {
+func (s *JobService) UpdateJob(jobID uuid.UUID, req *dtos.UpdateJobRequest, ctx *fiber.Ctx) (*dtos.MessageResponse, error) {
 	tx := s.jobRepo.BeginTransaction() // Use jobRepo's transaction
 	defer tx.Rollback()
 
-	recruiterID, ok := ctx.Locals("userID").(uuid.UUID)
+	userID, ok := ctx.Locals("userID").(uuid.UUID)
 	if !ok {
 		log.Error("Error validating recruiter ID from context")
 		return nil, errors.New("invalid user ID format")
+	}
+
+	recruiterID, err := s.jobRepo.GetRecruiterIDByUserID(userID)
+	if err != nil {
+		log.Error("Error retrieving recruiter ID: ", err)
+		return nil, errors.New("invalid recruiter ID format")
 	}
 
 	// Find the existing job
@@ -159,62 +199,47 @@ func (s *JobService) UpdateJob(jobID uuid.UUID, req *dtos.UpdateJobRequest, ctx 
 		return nil, errors.New("unauthorized to update this job")
 	}
 
-	// Update fields only if they are provided in the request
-	updated := false
-	if req.Name != nil && *req.Name != "" {
+	// Update job fields
+	// Update job fields that are present in the request
+	if req.Name != nil {
 		job.Name = *req.Name
-		updated = true
 	}
-	if req.Criteria != nil && *req.Criteria != "" {
-		job.Criteria = *req.Criteria
-		updated = true
+	if req.Type != nil {
+		job.Type = *req.Type
 	}
-	if req.Qualification != nil && *req.Qualification != "" {
+	if req.Position != nil {
+		job.Position = *req.Position
+	}
+	if req.Salary != nil {
+		job.Salary = *req.Salary
+	}
+	if req.Field != nil {
+		job.Field = *req.Field
+	}
+	if req.Description != nil {
+		job.Description = *req.Description
+	}
+	if req.Responsibility != nil {
+		job.Responsibility = *req.Responsibility
+	}
+	if req.ClosedAt != nil {
+		job.ClosedAt = *req.ClosedAt
+	}
+	if req.Qualification != nil {
 		job.Qualification = *req.Qualification
-		updated = true
 	}
-	if req.Status != nil && *req.Status != "" {
-		// Add validation for allowed statuses if needed
-		job.Status = *req.Status
-		updated = true
-	}
-
-	if !updated {
-		// Optional: return an error or message if no fields were updated
-		log.Info("No fields provided for update for job ID: ", jobID)
-		// Return current job state without hitting DB again
-		return &dtos.JobResponse{
-			ID:            job.ID,
-			CompanyID:     job.CompanyID,
-			RecruiterID:   job.RecruiterID,
-			Name:          job.Name,
-			Criteria:      job.Criteria,
-			Qualification: job.Qualification,
-			Status:        job.Status,
-		}, nil
-		// Or return errors.New("no update data provided")
-	}
-
-	// Pass the transaction to Update
 	if err := s.jobRepo.Update(tx, job); err != nil {
 		log.Error("Error updating job: ", err)
-		// Rollback is handled by defer
-		return nil, errors.New("failed to update job posting")
+		return nil, errors.New("failed to update job")
 	}
 
 	if err := tx.Commit().Error; err != nil {
-		log.Error("Error committing transaction for job update: ", err)
-		// Rollback is handled by defer
-		return nil, errors.New("failed to update job posting")
+		log.Error("Error committing transaction: ", err)
+		return nil, errors.New("failed to update job")
 	}
 
-	return &dtos.JobResponse{
-		ID:            job.ID,
-		CompanyID:     job.CompanyID,
-		RecruiterID:   job.RecruiterID,
-		Name:          job.Name,
-		Criteria:      job.Criteria,
-		Qualification: job.Qualification,
-		Status:        job.Status,
+	return &dtos.MessageResponse{
+		Message: "Successfully updated job",
 	}, nil
+
 }

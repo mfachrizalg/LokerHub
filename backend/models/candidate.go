@@ -10,11 +10,12 @@ type Candidate struct {
 	Name        string    `gorm:"size:50;not null"`
 	Description string    `gorm:"type:text; not null"`
 	Handphone   string    `gorm:"size:15;unique;not null"`
-	Photo       string    `gorm:"type:text"`
+	Photo       string    `gorm:"size:255"`
 	Education   string    `gorm:"size:50;not null"`
 	Field       string    `gorm:"size:50;not null"`
 	Location    string    `gorm:"size:50;not null"`
-	CV          string    `gorm:"type:text"`
+	CV          string    `gorm:"size:255"`
 
-	User User `gorm:"foreignKey:UserID"`
+	User      User      `gorm:"foreignKey:UserID"`
+	Processes []Process `gorm:"foreignKey:CandidateID"`
 }

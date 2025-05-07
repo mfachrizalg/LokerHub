@@ -8,12 +8,10 @@ import (
 type ProcessStatus string
 
 const (
-	Applied   ProcessStatus = "Applied"
-	Reviewed  ProcessStatus = "Reviewed"
-	Interview ProcessStatus = "Interview"
-	Offered   ProcessStatus = "Offered"
-	Rejected  ProcessStatus = "Rejected"
-	Hired     ProcessStatus = "Hired"
+	Applied  ProcessStatus = "Applied"
+	Reviewed ProcessStatus = "Reviewed"
+	Rejected ProcessStatus = "Rejected"
+	Hired    ProcessStatus = "Hired"
 )
 
 type Process struct {
@@ -23,7 +21,7 @@ type Process struct {
 	Status      ProcessStatus `gorm:"size:25;not null;default:'Applied'"`
 	AppliedAt   time.Time     `gorm:"autoCreateTime"`
 	UpdatedAt   time.Time     `gorm:"autoUpdateTime"`
-	Detail      string        `gorm:"size:100;not null"`
+	Detail      string        `gorm:"size:100"`
 
 	Job       Job       `gorm:"foreignKey:JobID"`
 	Candidate Candidate `gorm:"foreignKey:CandidateID"`

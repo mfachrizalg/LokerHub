@@ -1,29 +1,41 @@
 package dtos
 
-import "github.com/google/uuid"
+import (
+	"github.com/google/uuid"
+	"time"
+)
+
+type JobResponse struct {
+	ID          uuid.UUID `json:"id"`
+	CompanyID   uuid.UUID `json:"company_id"`
+	Name        string    `json:"name"`
+	CompanyName string    `json:"company_name"`
+	Location    string    `json:"location"`
+	CreatedAt   time.Time `json:"created_at"`
+}
 
 // CreateJobRequest represents the request body for creating a job
 type CreateJobRequest struct {
-	CompanyID     uuid.UUID `json:"company_id" validate:"required"`
-	Name          string    `json:"name" validate:"required"`
-	Criteria      string    `json:"criteria" validate:"required"`
-	Qualification string    `json:"qualification" validate:"required"`
+	Name           string    `json:"name" validate:"required"`
+	Type           string    `json:"type" validate:"required"`
+	Position       string    `json:"position" validate:"required"`
+	Salary         int       `json:"salary" validate:"required"`
+	Field          string    `json:"field" validate:"required"`
+	Description    string    `json:"description" validate:"required"`
+	Responsibility string    `json:"responsibility" validate:"required"`
+	ClosedAt       time.Time `json:"closed_at" validate:"required"`
+	Qualification  string    `json:"qualification" validate:"required"`
 }
 
-// JobResponse represents the response body for job operations
-type JobResponse struct {
-	ID            uuid.UUID `json:"id"`
-	CompanyID     uuid.UUID `json:"company_id"`
-	RecruiterID   uuid.UUID `json:"recruiter_id"`
-	Name          string    `json:"name"`
-	Criteria      string    `json:"criteria"`
-	Qualification string    `json:"qualification"`
-	Status        string    `json:"status"`
-}
-
+// UpdateJobRequest represents the request body for updating a job
 type UpdateJobRequest struct {
-	Name          *string `json:"name,omitempty"` // Use pointers to distinguish between empty and not provided
-	Criteria      *string `json:"criteria,omitempty"`
-	Qualification *string `json:"qualification,omitempty"`
-	Status        *string `json:"status,omitempty"` // e.g., "Active", "Inactive"
+	Name           *string    `json:"name,omitempty"`
+	Type           *string    `json:"type,omitempty"`
+	Position       *string    `json:"position,omitempty"`
+	Salary         *int       `json:"salary,omitempty"`
+	Field          *string    `json:"field,omitempty"`
+	Description    *string    `json:"description,omitempty"`
+	Responsibility *string    `json:"responsibility,omitempty"`
+	ClosedAt       *time.Time `json:"closed_at,omitempty"`
+	Qualification  *string    `json:"qualification,omitempty"`
 }
