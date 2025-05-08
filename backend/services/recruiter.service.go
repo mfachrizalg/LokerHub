@@ -2,12 +2,14 @@ package services
 
 import (
 	"backend/dtos"
+	"backend/helpers"
 	"backend/models"
 	"backend/repositories"
 	"errors"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/log"
 	"github.com/google/uuid"
+	"mime/multipart"
 )
 
 type RecruiterService struct {
@@ -32,6 +34,8 @@ func (s *RecruiterService) RegisterRecruiter(req *dtos.RegisterRecruiterRequest,
 		CompanyID: req.CompanyID,
 		UserID:    userId,
 		Name:      req.Name,
+		Position:  req.Position,
+		PhotoURL:  req.PhotoURL,
 		Handphone: req.Handphone,
 	}
 
@@ -49,4 +53,9 @@ func (s *RecruiterService) RegisterRecruiter(req *dtos.RegisterRecruiterRequest,
 	return &dtos.MessageResponse{
 		Message: "Recruiter registered successfully",
 	}, nil
+}
+
+func (s *RecruiterService) UploadRecruiterPhoto(file *multipart.FileHeader) (string, error) {
+	// Using the folder ID for recruiter photos
+	return helpers.UploadPhoto(file, "1uGimZhfrohl_UefdkAEYH4j49Jmhn_hX")
 }

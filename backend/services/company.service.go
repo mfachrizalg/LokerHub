@@ -2,11 +2,13 @@ package services
 
 import (
 	"backend/dtos"
+	"backend/helpers"
 	"backend/models"
 	"backend/repositories"
 	"errors"
 	"github.com/gofiber/fiber/v2/log"
 	"github.com/google/uuid"
+	"mime/multipart"
 )
 
 type CompanyService struct {
@@ -65,4 +67,8 @@ func (s *CompanyService) GetAllCompany() (*dtos.GetAllCompanyResponse, error) {
 	}
 
 	return &response, nil
+}
+
+func (s *CompanyService) UploadCompanyLogo(file *multipart.FileHeader) (string, error) {
+	return helpers.UploadPhoto(file, "1uGimZhfrohl_UefdkAEYH4j49Jmhn_hX")
 }
