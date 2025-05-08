@@ -46,7 +46,7 @@ const Navbar = ({ role }: NavbarProps) => {
             <Link
               key={index}
               href={item.href}
-              className="text-base text-[#1e3a5f] hover:bold font-medium"
+              className="text-lg text-[#1e3a5f] hover:bold font-medium"
             >
               {item.label}
             </Link>

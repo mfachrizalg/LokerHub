@@ -25,10 +25,10 @@ export default function Home() {
           </div>
           {/* Navigation Links */}
           <nav className="flex items-center gap-8">
-            <div className="text-[#1e3a5f] font-medium hover:underline">
+            <div className="text-[#1e3a5f] font-medium">
               Kandidat
             </div>
-            <div className="text-[#1e3a5f] font-medium hover:underline">
+            <div className="text-[#1e3a5f] font-medium">
               Rekruter
             </div>
             <Link

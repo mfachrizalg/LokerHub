@@ -6,6 +6,8 @@ import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { GoX } from "react-icons/go";
 import { useRouter } from "next/navigation"
+import { ArrowLeft } from "lucide-react"
+import Footer from "@/components/global/footer";
 
 
 export default function CompleteProfileRekruter() {
@@ -39,23 +41,30 @@ export default function CompleteProfileRekruter() {
     };
 
     return(
-        <div className="min-h-screen bg-[#F5EFE7] py-8">
+        <div className="min-h-screen bg-white pt-8">
+            {/* Back button */}
+            <div className="ml-20">
+                <button onClick={() => router.back()} className="flex items-center text-[#1e3a5f] hover:underline cursor-pointer">
+                    <ArrowLeft className="h-4 w-4 mr-1" />
+                    Kembali
+                </button>
+            </div>
             <div className="container mx-auto px-4 max-w-xl">
                 <div className="my-8 flex justify-center">
                     <Image
                         src="/LokerHub_Logo.svg"
                         alt="logo"
                         className="object-contain"
-                        width={400}
-                        height={100}
+                        width={320}
+                        height={80}
                     />
                 </div>
 
-                <h1 className="text-3xl font-bold text-center text-[#1e3a5f] mb-8">Lengkapi Data Diri</h1>
+                <h1 className="text-2xl font-bold text-center text-[#1e3a5f] mb-3">Lengkapi Data Diri</h1>
 
                 {/* Form for personal information */}
                 <form>
-                <div className="bg-[#d9d9d9] bg-opacity-30 rounded-lg p-6 mb-6 border border-blue-200">
+                <div className="bg-[#f8f0e5] bg-opacity-30 rounded-lg p-6 mb-6 border border-[#e8d5c4]">
                     <h2 className="text-xl font-bold text-[#1e3a5f] mb-4">Informasi Pribadi</h2>
 
                     <div className="space-y-4 pl-3">
@@ -65,7 +74,7 @@ export default function CompleteProfileRekruter() {
                             type="text"
                             name="namaLengkap"
                             required
-                            className="w-full px-3 py-2 bg-white border border-white rounded-md focus:outline-none focus:ring-2 focus:ring-[#1e3a5f]"
+                            className="w-full px-3 py-2 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#1e3a5f]"
                             />
                         </div>
 
@@ -144,10 +153,9 @@ export default function CompleteProfileRekruter() {
                 {/* Form for company information */}
                 {showForm && (
                     <form>
-                        <div className="bg-[#d9d9d9] bg-opacity-30 rounded-lg p-6 mb-6 border border-blue-200 relative">
+                        <div className="bg-[#f8f0e5] rounded-lg p-6 mb-6 border border-[#e8d5c4] relative">
                             <button 
-                                type="button"
-                                className="absolute top-3 right-3 text-gray-600 hover:text-gray-800"
+                                className="absolute top-3 right-3 text-gray-600 hover:text-gray-800 cursor-pointer"
                                 onClick={() => setShowForm(false)}
                             >
                                 <GoX className="w-6 h-6" />
@@ -207,13 +215,14 @@ export default function CompleteProfileRekruter() {
                     </form>
                 )}
 
-                <div className="flex justify-center">
+                <div className="flex justify-center mt-6">
                     <Button type="submit"
-                            className="py-2 px-8 bg-[#a8c5e2] border border-black hover:bg-[#97b8d9] text-[#1e3a5f] font-medium rounded-md transition-colors">
+                            className="py-2 px-6 bg-[#1e3a5f] hover:bg-[#1e3a5f]/90 text-white font-medium rounded-md transition-colors cursor-pointer mb-10">
                         Submit
                     </Button>
                 </div>
             </div>
+            <Footer />
         </div>
 
     )

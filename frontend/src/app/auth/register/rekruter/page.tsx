@@ -33,13 +33,13 @@ export default function RegisterRekruter() {
                 {/* Login Form Section */}
                 <div className="relative bg-white rounded-lg p-10 max-w-md mx-auto shadow-lg w-full">
                     {/* Close Button */}
-                    <Button variant="ghost" className="absolute right-6 top-6 hover:text-gray-700" onClick={() => router.push("/")}>
+                    <Button variant="ghost" className="absolute right-6 top-6 hover:text-gray-700 cursor-pointer" onClick={() => router.push("/")}>
                         <GoX className="h-6 w-6" />
                     </Button>
                     
                     <div className="flex items-center gap-3 mb-6">
                         <button onClick={() => router.push("/auth/register")} className="text-gray-500 hover:text-gray-700">
-                            <FiArrowLeft className="h-5 w-5" />
+                            <FiArrowLeft className="h-5 w-5 cursor-pointer" />
                         </button>
                         <h2 className="text-xl font-semibold text-[#1e3a5f]">Registrasi Rekruter</h2>
                     </div>
@@ -77,7 +77,7 @@ export default function RegisterRekruter() {
 
                         <button
                             type="submit"
-                            className="w-full py-2 bg-[#a8c5e2] hover:bg-[#97b8d9] text-[#1e3a5f] font-medium rounded-md transition-colors"
+                            className="w-full py-2 bg-[#a8c5e2] hover:bg-[#97b8d9] text-[#1e3a5f] font-medium rounded-md transition-colors cursor-pointer"
                         >
                             Buat Akun
                         </button>
