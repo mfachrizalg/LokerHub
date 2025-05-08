@@ -20,34 +20,55 @@ func NewCompanyController(companyService *services.CompanyService) *CompanyContr
 }
 
 func (c *CompanyController) RegisterCompany(ctx *fiber.Ctx) error {
-	var request dtos.RegisterCompanyRequest
+	name := ctx.FormValue("name")
+	location := ctx.FormValue("location")
+	industry := ctx.FormValue("industry")
 
-	// Parse request body
-	if err := ctx.BodyParser(&request); err != nil {
+	if name == "" || location == "" || industry == "" {
 		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"message": "Invalid request body",
+			"message": "Missing required fields",
+		})
+	}
+
+	file, err := ctx.FormFile("logo")
+	if err != nil {
+		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"message": "Error retrieving file",
 			"error":   err.Error(),
 		})
 	}
 
-	// Validate request data
-	if err := c.validator.Struct(&request); err != nil {
+	logoURL, err := c.companyService.UploadCompanyLogo(file)
+	if err != nil {
+		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"message": "Failed to upload image",
+			"error":   err.Error(),
+		})
+	}
+
+	req := dtos.RegisterCompanyRequest{
+		Name:     name,
+		Location: location,
+		Industry: industry,
+		Logo:     logoURL,
+	}
+
+	if err := c.validator.Struct(req); err != nil {
 		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"message": "Validation failed",
 			"error":   err.Error(),
 		})
 	}
 
-	// Process registration
-	response, err := c.companyService.RegisterCompany(&request)
+	response, err := c.companyService.RegisterCompany(&req)
 	if err != nil {
 		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"message": "Registration failed",
+			"message": "Failed to register company",
 			"error":   err.Error(),
 		})
 	}
 
-	return ctx.Status(fiber.StatusCreated).JSON(response)
+	return ctx.Status(fiber.StatusOK).JSON(response)
 }
 
 func (c *CompanyController) GetAllCompany(ctx *fiber.Ctx) error {
