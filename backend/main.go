@@ -54,6 +54,9 @@ func main() {
 	}()
 
 	log.Printf("Server started on port %s", port)
+	app.Get("/", func(ctx *fiber.Ctx) error {
+		return ctx.SendString("LokerHub API!")
+	})
 
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, os.Interrupt, syscall.SIGTERM)
