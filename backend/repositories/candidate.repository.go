@@ -3,6 +3,7 @@ package repositories
 import (
 	"backend/config"
 	"backend/models"
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
@@ -22,6 +23,12 @@ func (r *CandidateRepository) Create(candidate *models.Candidate) error {
 
 func (r *CandidateRepository) Update(candidate *models.Candidate) error {
 	return r.DB.Updates(&candidate).Error
+}
+
+func (r *CandidateRepository) GetByUserID(userID *uuid.UUID) (*models.Candidate, error) {
+	var candidate *models.Candidate
+	err := r.DB.Where("user_id = ?", userID).Find(&candidate).Error
+	return candidate, err
 }
 
 func (r *CandidateRepository) BeginTransaction() *gorm.DB {

@@ -5,6 +5,7 @@ import (
 	"backend/services"
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
+	"github.com/google/uuid"
 )
 
 type CompanyController struct {
@@ -81,4 +82,31 @@ func (c *CompanyController) GetAllCompany(ctx *fiber.Ctx) error {
 	}
 
 	return ctx.Status(fiber.StatusOK).JSON(response)
+}
+
+func (c *CompanyController) GetDetailCompany(ctx *fiber.Ctx) error {
+	companyIDStr := ctx.Params("companyID")
+	companyID, err := uuid.Parse(companyIDStr)
+	if err != nil {
+		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"message": "Invalid company ID",
+			"error":   err.Error(),
+		})
+	}
+
+	company, err := c.companyService.GetCompanyDetail(&companyID)
+	if err != nil {
+		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"message": "Failed to fetch company detail",
+			"error":   err.Error(),
+		})
+	}
+
+	if company == nil {
+		return ctx.Status(fiber.StatusNotFound).JSON(fiber.Map{
+			"message": "Company not found",
+		})
+	}
+
+	return ctx.Status(fiber.StatusOK).JSON(company)
 }

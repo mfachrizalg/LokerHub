@@ -15,5 +15,6 @@ func SetupRecruiterRoutes(app *fiber.App) {
 
 	recruiterRoute := app.Group("/api/recruiters")
 	recruiterRoute.Use(middleware.JWTAuth())
+	recruiterRoute.Get("/", middleware.RoleAuth("Recruiter"), recruiterController.GetRecruiterDetail)
 	recruiterRoute.Post("/register", middleware.RoleAuth("Recruiter"), recruiterController.RegisterRecruit)
 }

@@ -69,6 +69,18 @@ func (s *CompanyService) GetAllCompany() (*dtos.GetAllCompanyResponse, error) {
 	return &response, nil
 }
 
+func (s *CompanyService) GetCompanyDetail(companyID *uuid.UUID) (*models.Company, error) {
+	company, err := s.companyRepo.FindByID(companyID)
+	if err != nil {
+		log.Error("Error getting company detail: ", err)
+		return nil, errors.New("failed to get company detail")
+	}
+	if company == nil {
+		return nil, errors.New("company not found")
+	}
+	return company, nil
+}
+
 func (s *CompanyService) UploadCompanyLogo(file *multipart.FileHeader) (string, error) {
 	return helpers.UploadPhoto(file, "1uGimZhfrohl_UefdkAEYH4j49Jmhn_hX")
 }

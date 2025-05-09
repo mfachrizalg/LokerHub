@@ -89,3 +89,22 @@ func (c *RecruitController) RegisterRecruit(ctx *fiber.Ctx) error {
 
 	return ctx.Status(fiber.StatusOK).JSON(response)
 }
+
+func (c *RecruitController) GetRecruiterDetail(ctx *fiber.Ctx) error {
+	userID, ok := ctx.Locals("userID").(uuid.UUID)
+	if !ok {
+		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"message": "Invalid user ID format",
+		})
+	}
+
+	recruiter, err := c.recruitService.GetRecruiterDetail(userID)
+	if err != nil {
+		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"message": "Failed to get recruiter detail",
+			"error":   err.Error(),
+		})
+	}
+
+	return ctx.Status(fiber.StatusOK).JSON(recruiter)
+}

@@ -243,3 +243,21 @@ func (s *JobService) UpdateJob(jobID uuid.UUID, req *dtos.UpdateJobRequest, ctx 
 	}, nil
 
 }
+
+// GetJobDetail retrieves job details by job ID
+func (s *JobService) GetJobDetail(jobID uuid.UUID) (*models.Job, error) {
+	tx := s.jobRepo.BeginTransaction()
+	defer tx.Rollback()
+
+	job, err := s.jobRepo.FindById(jobID)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			log.Warnf("Job with ID %s not found", jobID)
+			return nil, errors.New("job not found")
+		}
+		log.Error("Error retrieving job: ", err)
+		return nil, errors.New("failed to retrieve job")
+	}
+
+	return job, nil
+}

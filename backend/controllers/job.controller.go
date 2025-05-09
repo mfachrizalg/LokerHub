@@ -32,6 +32,30 @@ func (c *JobController) GetAllJobs(ctx *fiber.Ctx) error {
 	return ctx.Status(fiber.StatusOK).JSON(jobs)
 }
 
+// GetJobDetail retrieves the details of a specific job
+func (c *JobController) GetJobDetail(ctx *fiber.Ctx) error {
+	jobIDStr := ctx.Params("jobId")
+	jobID, err := uuid.Parse(jobIDStr)
+	if err != nil {
+		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"message": "Invalid Job ID format",
+		})
+	}
+
+	job, err := c.service.GetJobDetail(jobID)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return ctx.Status(fiber.StatusNotFound).JSON(fiber.Map{"message": "Job not found"})
+		}
+		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"message": "Failed to retrieve job details",
+			"error":   err.Error(),
+		})
+	}
+
+	return ctx.Status(fiber.StatusOK).JSON(job)
+}
+
 // UpdateJob updates an existing job
 func (c *JobController) UpdateJob(ctx *fiber.Ctx) error {
 	jobIDStr := ctx.Params("jobId")

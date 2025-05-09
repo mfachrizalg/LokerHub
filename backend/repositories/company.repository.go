@@ -3,6 +3,7 @@ package repositories
 import (
 	"backend/config"
 	"backend/models"
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
@@ -26,4 +27,10 @@ func (r *CompanyRepository) FindAll(company *[]models.Company) error {
 
 func (r *CompanyRepository) BeginTransaction() *gorm.DB {
 	return r.DB.Begin()
+}
+
+func (r *CompanyRepository) FindByID(companyID *uuid.UUID) (*models.Company, error) {
+	var company *models.Company
+	err := r.DB.Where("id = ?", companyID).Find(&company).Error
+	return company, err
 }
