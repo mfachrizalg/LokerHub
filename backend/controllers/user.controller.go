@@ -42,6 +42,12 @@ func (c *UserController) Register(ctx *fiber.Ctx) error {
 	// Process registration
 	response, err := c.userService.Register(&request)
 	if err != nil {
+		if err.Error() == "email already registered" {
+			return ctx.Status(fiber.StatusConflict).JSON(fiber.Map{
+				"message": "Registration failed",
+				"error":   err.Error(),
+			})
+		}
 		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"message": "Registration failed",
 			"error":   err.Error(),

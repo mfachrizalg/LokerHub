@@ -23,11 +23,20 @@ func (r *JobRepository) BeginTransaction() *gorm.DB {
 }
 
 // FindAll retrieves all jobs
-// FindAll retrieves all jobs without pagination
 func (r *JobRepository) FindAll() ([]models.Job, error) {
 	var jobs []models.Job
 
 	if err := r.DB.Find(&jobs).Error; err != nil {
+		return nil, err
+	}
+
+	return jobs, nil
+}
+
+func (r *JobRepository) FindAllByRecruiterID(id uuid.UUID) ([]models.Job, error) {
+	var jobs []models.Job
+
+	if err := r.DB.Where("recruiter_id = ?", id).Find(&jobs).Error; err != nil {
 		return nil, err
 	}
 
@@ -63,37 +72,48 @@ func (r *JobRepository) Delete(id uuid.UUID) error {
 }
 
 func (r *JobRepository) GetCompanyIDByRecruiterID(id uuid.UUID) (uuid.UUID, error) {
-	var companyID uuid.UUID
-	err := r.DB.Table("jobs").Select("company_id").Where("recruiter_id = ?", id).First(&companyID).Error
+	var recruiter models.Recruiter
+
+	err := r.DB.Where("id = ?", id).First(&recruiter).Error
 	if err != nil {
 		return uuid.Nil, err
 	}
-	return companyID, nil
+	return *recruiter.CompanyID, nil
 }
 
 func (r *JobRepository) GetRecruiterIDByUserID(id uuid.UUID) (uuid.UUID, error) {
-	var recruiterID uuid.UUID
-	err := r.DB.Table("recruiters").Select("id").Where("user_id = ?", id).First(&recruiterID).Error
+	var recruiter models.Recruiter
+
+	err := r.DB.Where("user_id = ?", id).First(&recruiter).Error
 	if err != nil {
 		return uuid.Nil, err
 	}
-	return recruiterID, nil
+
+	return recruiter.ID, nil
 }
 
 func (r *JobRepository) GetCandidateIDByUserID(id uuid.UUID) (uuid.UUID, error) {
-	var candidateID uuid.UUID
-	err := r.DB.Table("candidates").Select("id").Where("job_id = ?", id).First(&candidateID).Error
+	var candidate models.Candidate
+
+	err := r.DB.Where("user_id = ?", id).First(&candidate).Error
 	if err != nil {
 		return uuid.Nil, err
 	}
-	return candidateID, nil
+
+	return candidate.ID, nil
 }
 
-func (r *JobRepository) GetCompanyNameAndLocationByID(id uuid.UUID) (string, string, error) {
-	var companyName, location string
-	err := r.DB.Table("companies").Select("name, location").Where("id = ?", id).First(&companyName, &location).Error
-	if err != nil {
-		return "", "", err
+func (r *JobRepository) GetCompanyNameAndLocationByID(id uuid.UUID) (string, string, string, error) {
+	type CompanyInfo struct {
+		Name     string
+		Location string
+		Logo     string
 	}
-	return companyName, location, nil
+
+	var info CompanyInfo
+	err := r.DB.Table("companies").Select("name, location, logo").Where("id = ?", id).First(&info).Error
+	if err != nil {
+		return "", "", "", err
+	}
+	return info.Name, info.Location, info.Logo, nil
 }

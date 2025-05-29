@@ -17,8 +17,10 @@ func SetupJobRoutes(app *fiber.App) {
 
 	jobRoutes := app.Group("/api/jobs")
 	jobRoutes.Get("/", jobController.GetAllJobs)
+	jobRoutes.Get("/detail/:jobId", jobController.GetDetailJob)
 	jobRoutes.Use(middleware.JWTAuth())
-	jobRoutes.Post("/", middleware.RoleAuth("Recruiter"), jobController.CreateJob)
-	jobRoutes.Patch("/:id", middleware.RoleAuth("Recruiter"), jobController.UpdateJob)
-	jobRoutes.Post("/apply/:id", middleware.RoleAuth("Candidate"), jobController.ApplyJob)
+	jobRoutes.Post("/create", middleware.RoleAuth("Recruiter"), jobController.CreateJob)
+	jobRoutes.Put("/:jobId", middleware.RoleAuth("Recruiter"), jobController.UpdateJob)
+	jobRoutes.Get("/recruiter", middleware.RoleAuth("Recruiter"), jobController.GetJobsByRecruiterID)
+	jobRoutes.Post("/apply/:jobId", middleware.RoleAuth("Candidate"), jobController.ApplyJob)
 }

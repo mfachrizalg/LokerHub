@@ -9,7 +9,7 @@ type Company struct {
 	Name     string    `gorm:"size:50;not null"`
 	Location string    `gorm:"size:255;not null"`
 	Industry string    `gorm:"size:100;not null"`
-	Logo     string    `gorm:"size:255;"`
+	Logo     string    `gorm:"size:255"`
 
 	Recruiters []Recruiter `gorm:"foreignKey:CompanyID"`
 	Jobs       []Job       `gorm:"foreignKey:CompanyID"`

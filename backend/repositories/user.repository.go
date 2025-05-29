@@ -18,15 +18,15 @@ func NewUserRepository() *UserRepository {
 
 func (r *UserRepository) FindByEmail(email string) (*models.User, error) {
 	var user models.User
-	result := r.DB.Where("email = ?", email).First(&user)
-	if result.Error != nil {
-		return nil, result.Error
+	err := r.DB.Where("email = ?", email).First(&user).Error
+	if err != nil {
+		return nil, err
 	}
 	return &user, nil
 }
 
-func (r *UserRepository) Create(user *models.User) error {
-	return r.DB.Create(&user).Error
+func (r *UserRepository) CreateWithTx(tx *gorm.DB, user *models.User) error {
+	return tx.Create(user).Error
 }
 
 func (r *UserRepository) BeginTransaction() *gorm.DB {

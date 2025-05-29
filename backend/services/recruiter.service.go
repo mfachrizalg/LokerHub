@@ -8,8 +8,10 @@ import (
 	"errors"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/log"
+	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
 	"mime/multipart"
+	"os"
 )
 
 type RecruiterService struct {
@@ -25,13 +27,59 @@ func NewRecruiterService(repo *repositories.RecruiterRepository) *RecruiterServi
 func (s *RecruiterService) RegisterRecruiter(req *dtos.RegisterRecruiterRequest, ctx *fiber.Ctx) (*dtos.MessageResponse, error) {
 	tx := s.repo.BeginTransaction()
 	defer tx.Rollback()
-	userId, ok := ctx.Locals("userID").(uuid.UUID)
-	if !ok {
-		log.Error("Error validating user id")
-		return nil, errors.New("invalid user id format")
+
+	// Get token from cookie instead of context locals
+	cookie := ctx.Cookies("LokerHubCookie")
+	if cookie == "" {
+		log.Error("No authentication cookie found")
+		return nil, errors.New("authentication required")
 	}
+
+	// Parse and validate the JWT token
+	token, err := jwt.Parse(cookie, func(token *jwt.Token) (interface{}, error) {
+		// Validate signing method
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, errors.New("invalid token signing method")
+		}
+		// Return the secret key used for signing
+		secret := os.Getenv("JWT_SECRET")
+		return []byte(secret), nil
+	})
+
+	if err != nil {
+		log.Error("Error parsing token: ", err)
+		return nil, errors.New("invalid authentication token")
+	}
+
+	// Extract claims from token
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if !ok || !token.Valid {
+		log.Error("Invalid token claims")
+		return nil, errors.New("invalid authentication token")
+	}
+
+	// Extract user ID from claims
+	userIdStr, ok := claims["id"].(string)
+	if !ok {
+		log.Error("User ID not found in token")
+		return nil, errors.New("invalid user information")
+	}
+
+	userId, err := uuid.Parse(userIdStr)
+	if err != nil {
+		log.Error("Error parsing user ID: ", err)
+		return nil, errors.New("invalid user ID format")
+	}
+
+	id, err := s.repo.FindByUserId(userId)
+	if err != nil {
+		log.Error("Error finding user: ", err)
+		return nil, errors.New("invalid user ID")
+	}
+
 	recruiter := models.Recruiter{
-		CompanyID: req.CompanyID,
+		ID:        id,
+		CompanyID: &req.CompanyID,
 		UserID:    userId,
 		Name:      req.Name,
 		Position:  req.Position,
@@ -39,7 +87,7 @@ func (s *RecruiterService) RegisterRecruiter(req *dtos.RegisterRecruiterRequest,
 		Handphone: req.Handphone,
 	}
 
-	if err := s.repo.Update(&recruiter); err != nil {
+	if err := s.repo.UpdateWithTx(tx, &recruiter); err != nil {
 		tx.Rollback()
 		log.Error("Error creating recruiter: ", err)
 		return nil, errors.New("failed to process registration")

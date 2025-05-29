@@ -3,18 +3,21 @@ package controllers
 import (
 	"backend/services"
 	"errors"
+	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
 type ProcessController struct {
-	service *services.ProcessService
+	service  *services.ProcessService
+	validate *validator.Validate
 }
 
 func NewProcessController(service *services.ProcessService) *ProcessController {
 	return &ProcessController{
-		service: service,
+		service:  service,
+		validate: validator.New(),
 	}
 }
 

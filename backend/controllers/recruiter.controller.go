@@ -52,8 +52,7 @@ func (c *RecruitController) RegisterRecruit(ctx *fiber.Ctx) error {
 		})
 	}
 
-	// Handle file upload (assuming you'll implement this in a service)
-	// This will need to be implemented in your service
+	// Handle file upload
 	photoURL, err := c.recruitService.UploadRecruiterPhoto(file)
 	if err != nil {
 		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{

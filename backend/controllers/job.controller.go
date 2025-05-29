@@ -4,18 +4,21 @@ import (
 	"backend/dtos"
 	"backend/services"
 	"errors"
+	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
 type JobController struct {
-	service *services.JobService
+	service  *services.JobService
+	validate *validator.Validate
 }
 
 func NewJobController(service *services.JobService) *JobController {
 	return &JobController{
-		service: service,
+		service:  service,
+		validate: validator.New(),
 	}
 }
 
@@ -67,9 +70,19 @@ func (c *JobController) UpdateJob(ctx *fiber.Ctx) error {
 // CreateJob creates a new job
 func (c *JobController) CreateJob(ctx *fiber.Ctx) error {
 	var req dtos.CreateJobRequest
+
+	// Parse request body
 	if err := ctx.BodyParser(&req); err != nil {
 		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"message": "Invalid request body",
+			"error":   err.Error(),
+		})
+	}
+
+	// Validate request data
+	if err := c.validate.Struct(&req); err != nil {
+		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"message": "Validation failed",
 			"error":   err.Error(),
 		})
 	}
@@ -115,4 +128,40 @@ func (c *JobController) ApplyJob(ctx *fiber.Ctx) error {
 	}
 
 	return ctx.Status(fiber.StatusOK).JSON(response)
+}
+
+func (c *JobController) GetDetailJob(ctx *fiber.Ctx) error {
+	jobIDStr := ctx.Params("jobId")
+	jobID, err := uuid.Parse(jobIDStr)
+	if err != nil {
+		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"message": "Invalid Job ID format",
+		})
+	}
+
+	response, err := c.service.GetJobByID(jobID)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return ctx.Status(fiber.StatusNotFound).JSON(fiber.Map{"message": "Job not found"})
+		}
+		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"message": "Failed to retrieve job details",
+			"error":   err.Error(),
+		})
+	}
+
+	return ctx.Status(fiber.StatusOK).JSON(response)
+}
+
+func (c *JobController) GetJobsByRecruiterID(ctx *fiber.Ctx) error {
+	jobs, err := c.service.GetJobsByRecruiterID(ctx)
+	if err != nil {
+		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"message": "Failed to retrieve jobs for recruiter",
+			"error":   err.Error(),
+		})
+	}
+
+	return ctx.Status(fiber.StatusOK).JSON(jobs)
+
 }

@@ -6,7 +6,9 @@ import (
 	"backend/repositories"
 	"errors"
 	"fmt"
+	"github.com/golang-jwt/jwt/v5"
 	"gorm.io/gorm"
+	"os"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/log"
@@ -37,7 +39,7 @@ func (s *JobService) GetAllJobs() (*[]dtos.JobResponse, error) {
 	// Convert model to DTO
 	jobResponses := make([]dtos.JobResponse, len(jobs))
 	for i, job := range jobs {
-		companyName, location, err := s.jobRepo.GetCompanyNameAndLocationByID(job.CompanyID)
+		companyName, location, logo, err := s.jobRepo.GetCompanyNameAndLocationByID(job.CompanyID)
 		if err != nil {
 			log.Error("Error retrieving company name: ", err)
 			return nil, errors.New("failed to retrieve company name")
@@ -50,9 +52,123 @@ func (s *JobService) GetAllJobs() (*[]dtos.JobResponse, error) {
 			CompanyName: companyName,
 			Location:    location,
 			CreatedAt:   job.CreatedAt,
+			CompanyLogo: logo,
 		}
 	}
 
+	return &jobResponses, nil
+}
+
+// GetJobByID retrieves a job by its ID
+func (s *JobService) GetJobByID(jobID uuid.UUID) (*dtos.JobDetailResponse, error) {
+	job, err := s.jobRepo.FindById(jobID)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			log.Warnf("Job with ID %s not found", jobID)
+			return nil, errors.New("job not found")
+		}
+		log.Error("Error retrieving job: ", err)
+		return nil, errors.New("failed to retrieve job")
+	}
+
+	companyName, location, logo, err := s.jobRepo.GetCompanyNameAndLocationByID(job.CompanyID)
+	if err != nil {
+		log.Error("Error retrieving company name: ", err)
+		return nil, errors.New("failed to retrieve company name")
+	}
+
+	jobResponse := dtos.JobDetailResponse{
+		ID:             job.ID,
+		Name:           job.Name,
+		Type:           job.Type,
+		Position:       job.Position,
+		Salary:         job.Salary,
+		Field:          job.Field,
+		Description:    job.Description,
+		Responsibility: job.Responsibility,
+		Qualification:  job.Qualification,
+		CompanyLogo:    logo,
+		CompanyName:    companyName,
+		Location:       location,
+	}
+
+	return &jobResponse, nil
+}
+
+// GetJobsByRecruiterID retrieves all jobs posted by a specific recruiter
+func (s *JobService) GetJobsByRecruiterID(ctx *fiber.Ctx) (*[]dtos.JobResponse, error) {
+	cookie := ctx.Cookies("LokerHubCookie")
+	if cookie == "" {
+		log.Error("No authentication cookie found")
+		return nil, errors.New("authentication required")
+	}
+
+	// Parse and validate the JWT token
+	token, err := jwt.Parse(cookie, func(token *jwt.Token) (interface{}, error) {
+		// Validate signing method
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, errors.New("invalid token signing method")
+		}
+		// Return the secret key used for signing
+		secret := os.Getenv("JWT_SECRET")
+		return []byte(secret), nil
+	})
+
+	if err != nil {
+		log.Error("Error parsing token: ", err)
+		return nil, errors.New("invalid authentication token")
+	}
+
+	// Extract claims from token
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if !ok || !token.Valid {
+		log.Error("Invalid token claims")
+		return nil, errors.New("invalid authentication token")
+	}
+
+	userIdStr, ok := claims["id"].(string)
+	if !ok {
+		log.Error("User ID not found in token claims")
+		return nil, errors.New("invalid authentication token")
+	}
+
+	userId, err := uuid.Parse(userIdStr)
+	if err != nil {
+		log.Error("Error parsing user ID: ", err)
+		return nil, errors.New("invalid user information")
+	}
+
+	recruiterID, err := s.jobRepo.GetRecruiterIDByUserID(userId)
+	if err != nil {
+		log.Error("Error validating recruiter ID")
+		return nil, errors.New("invalid recruiter ID format")
+	}
+
+	jobs, err := s.jobRepo.FindAllByRecruiterID(recruiterID)
+	if err != nil {
+		log.Error("Error retrieving jobs by recruiter ID: ", err)
+		return nil, errors.New("failed to retrieve jobs")
+	}
+
+	// Convert model to DTO
+	jobResponses := make([]dtos.JobResponse, len(jobs))
+	for i, job := range jobs {
+		companyName, location, logo, err := s.jobRepo.GetCompanyNameAndLocationByID(job.CompanyID)
+		if err != nil {
+			log.Error("Error retrieving company name: ", err)
+			return nil, errors.New("failed to retrieve company name")
+		}
+		// Convert each job to its corresponding DTO
+		jobResponses[i] = dtos.JobResponse{
+			ID:          job.ID,
+			CompanyID:   job.CompanyID,
+			Name:        job.Name,
+			CompanyName: companyName,
+			Location:    location,
+			CreatedAt:   job.CreatedAt,
+			CompanyLogo: logo,
+		}
+	}
 	return &jobResponses, nil
 }
 
@@ -61,13 +177,47 @@ func (s *JobService) CreateJob(req *dtos.CreateJobRequest, ctx *fiber.Ctx) (*dto
 	tx := s.jobRepo.BeginTransaction()
 	defer tx.Rollback()
 
-	userID, ok := ctx.Locals("userID").(uuid.UUID)
-	if !ok {
-		log.Error("Error validating user ID from context")
-		return nil, errors.New("invalid user ID format")
+	cookie := ctx.Cookies("LokerHubCookie")
+	if cookie == "" {
+		log.Error("No authentication cookie found")
+		return nil, errors.New("authentication required")
 	}
 
-	recruiterID, err := s.jobRepo.GetRecruiterIDByUserID(userID)
+	// Parse and validate the JWT token
+	token, err := jwt.Parse(cookie, func(token *jwt.Token) (interface{}, error) {
+		// Validate signing method
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, errors.New("invalid token signing method")
+		}
+		// Return the secret key used for signing
+		secret := os.Getenv("JWT_SECRET")
+		return []byte(secret), nil
+	})
+
+	if err != nil {
+		log.Error("Error parsing token: ", err)
+		return nil, errors.New("invalid authentication token")
+	}
+
+	// Extract claims from token
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if !ok || !token.Valid {
+		log.Error("Invalid token claims")
+		return nil, errors.New("invalid authentication token")
+	}
+
+	userIdStr, ok := claims["id"].(string)
+	if !ok {
+		log.Error("User ID not found in token claims")
+		return nil, errors.New("invalid authentication token")
+	}
+	userId, err := uuid.Parse(userIdStr)
+	if err != nil {
+		log.Error("Error parsing user ID: ", err)
+		return nil, errors.New("invalid user information")
+	}
+
+	recruiterID, err := s.jobRepo.GetRecruiterIDByUserID(userId)
 	if err != nil {
 		log.Error("Error validating recruiter ID")
 		return nil, errors.New("invalid recruiter ID format")
@@ -110,13 +260,48 @@ func (s *JobService) CreateJob(req *dtos.CreateJobRequest, ctx *fiber.Ctx) (*dto
 
 // ApplyJob allows a candidate to apply for a job
 func (s *JobService) ApplyJob(jobID uuid.UUID, ctx *fiber.Ctx) (*dtos.MessageResponse, error) {
-	userID, ok := ctx.Locals("userID").(uuid.UUID)
-	if !ok {
-		log.Error("Error validating candidate ID from context")
-		return nil, errors.New("invalid user ID format")
+	cookie := ctx.Cookies("LokerHubCookie")
+	if cookie == "" {
+		log.Error("No authentication cookie found")
+		return nil, errors.New("authentication required")
 	}
 
-	candidateID, err := s.jobRepo.GetCandidateIDByUserID(userID)
+	// Parse and validate the JWT token
+	token, err := jwt.Parse(cookie, func(token *jwt.Token) (interface{}, error) {
+		// Validate signing method
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, errors.New("invalid token signing method")
+		}
+		// Return the secret key used for signing
+		secret := os.Getenv("JWT_SECRET")
+		return []byte(secret), nil
+	})
+
+	if err != nil {
+		log.Error("Error parsing token: ", err)
+		return nil, errors.New("invalid authentication token")
+	}
+
+	// Extract claims from token
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if !ok || !token.Valid {
+		log.Error("Invalid token claims")
+		return nil, errors.New("invalid authentication token")
+	}
+
+	userIdStr, ok := claims["id"].(string)
+	if !ok {
+		log.Error("User ID not found in token claims")
+		return nil, errors.New("invalid authentication token")
+	}
+
+	userId, err := uuid.Parse(userIdStr)
+	if err != nil {
+		log.Error("Error parsing user ID: ", err)
+		return nil, errors.New("invalid user information")
+	}
+
+	candidateID, err := s.jobRepo.GetCandidateIDByUserID(userId)
 	if err != nil {
 		log.Error("Error retrieving candidate ID: ", err)
 		return nil, errors.New("invalid candidate ID format")
@@ -166,17 +351,52 @@ func (s *JobService) ApplyJob(jobID uuid.UUID, ctx *fiber.Ctx) (*dtos.MessageRes
 	}, nil
 }
 
+// UpdateJob updates an existing job posting
 func (s *JobService) UpdateJob(jobID uuid.UUID, req *dtos.UpdateJobRequest, ctx *fiber.Ctx) (*dtos.MessageResponse, error) {
 	tx := s.jobRepo.BeginTransaction() // Use jobRepo's transaction
 	defer tx.Rollback()
 
-	userID, ok := ctx.Locals("userID").(uuid.UUID)
-	if !ok {
-		log.Error("Error validating recruiter ID from context")
-		return nil, errors.New("invalid user ID format")
+	cookie := ctx.Cookies("LokerHubCookie")
+	if cookie == "" {
+		log.Error("No authentication cookie found")
+		return nil, errors.New("authentication required")
 	}
 
-	recruiterID, err := s.jobRepo.GetRecruiterIDByUserID(userID)
+	// Parse and validate the JWT token
+	token, err := jwt.Parse(cookie, func(token *jwt.Token) (interface{}, error) {
+		// Validate signing method
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, errors.New("invalid token signing method")
+		}
+		// Return the secret key used for signing
+		secret := os.Getenv("JWT_SECRET")
+		return []byte(secret), nil
+	})
+
+	if err != nil {
+		log.Error("Error parsing token: ", err)
+		return nil, errors.New("invalid authentication token")
+	}
+
+	// Extract claims from token
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if !ok || !token.Valid {
+		log.Error("Invalid token claims")
+		return nil, errors.New("invalid authentication token")
+	}
+
+	userIdStr, ok := claims["id"].(string)
+	if !ok {
+		log.Error("User ID not found in token claims")
+		return nil, errors.New("invalid authentication token")
+	}
+	userId, err := uuid.Parse(userIdStr)
+	if err != nil {
+		log.Error("Error parsing user ID: ", err)
+		return nil, errors.New("invalid user information")
+	}
+
+	recruiterID, err := s.jobRepo.GetRecruiterIDByUserID(userId)
 	if err != nil {
 		log.Error("Error retrieving recruiter ID: ", err)
 		return nil, errors.New("invalid recruiter ID format")

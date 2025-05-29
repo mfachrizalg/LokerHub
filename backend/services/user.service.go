@@ -5,7 +5,6 @@ import (
 	"backend/models"
 	"backend/repositories"
 	"errors"
-
 	"github.com/gofiber/fiber/v2/log"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
@@ -59,8 +58,7 @@ func (s *UserService) Register(req *dtos.RegisterRequest) (*dtos.MessageResponse
 		Role:     req.Role,
 	}
 
-	if err := s.userRepo.Create(&user); err != nil {
-		tx.Rollback()
+	if err := s.userRepo.CreateWithTx(tx, &user); err != nil {
 		log.Error("Error creating user: ", err)
 		return nil, errors.New("failed to create user")
 	}
@@ -70,8 +68,7 @@ func (s *UserService) Register(req *dtos.RegisterRequest) (*dtos.MessageResponse
 		candidate := models.Candidate{
 			UserID: user.ID,
 		}
-		if err := s.candidateRepo.Create(&candidate).Error; err != nil {
-			tx.Rollback()
+		if err := s.candidateRepo.CreateWithTx(tx, &candidate); err != nil {
 			log.Error("Error creating candidate: ", err)
 			return nil, errors.New("failed to create candidate profile")
 		}
@@ -79,8 +76,7 @@ func (s *UserService) Register(req *dtos.RegisterRequest) (*dtos.MessageResponse
 		recruiter := models.Recruiter{
 			UserID: user.ID,
 		}
-		if err := s.recruiterRepo.Create(&recruiter).Error; err != nil {
-			tx.Rollback()
+		if err := s.recruiterRepo.CreateWithTx(tx, &recruiter); err != nil {
 			log.Error("Error creating recruiter: ", err)
 			return nil, errors.New("failed to create recruiter profile")
 		}

@@ -8,10 +8,26 @@ import (
 type JobResponse struct {
 	ID          uuid.UUID `json:"id"`
 	CompanyID   uuid.UUID `json:"company_id"`
+	CompanyLogo string    `json:"company_logo"`
 	Name        string    `json:"name"`
 	CompanyName string    `json:"company_name"`
 	Location    string    `json:"location"`
 	CreatedAt   time.Time `json:"created_at"`
+}
+
+type JobDetailResponse struct {
+	ID             uuid.UUID `json:"id"`
+	Name           string    `json:"name"`
+	Type           string    `json:"type"`
+	Position       string    `json:"position"`
+	Salary         int       `json:"salary"`
+	Field          string    `json:"field"`
+	Description    string    `json:"description"`
+	Responsibility string    `json:"responsibility"`
+	Qualification  string    `json:"qualification"`
+	Location       string    `json:"location"`
+	CompanyLogo    string    `json:"company_logo"`
+	CompanyName    string    `json:"company_name"`
 }
 
 // CreateJobRequest represents the request body for creating a job
